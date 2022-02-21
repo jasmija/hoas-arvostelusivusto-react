@@ -25,7 +25,7 @@ const app = express();
 app.set('view engine', 'hbs');
 
 // Listen to port 3000
-app.listen(3000, () => console.log('Listening at port 3000'));
+app.listen(8080, () => console.log('Listening at port 8080'));
 
 // Needed for css and images to work
 app.use('/css', express.static(path.join(__dirname, 'css')));
@@ -37,8 +37,8 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Define routes
-app.use('/', require('./routes/pages'));
-app.use('/', require('./routes/auth'));
+//app.use('/', require('./routes/pages'));
+//app.use('/', require('./routes/auth'));
 
 const url = require('url');
 
