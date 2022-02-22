@@ -45,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "axios": "^0.26.0",
     "cookie-parser": "^1.4.6",
     "react-router-dom": "^5.2.0"
   }

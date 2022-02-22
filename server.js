@@ -25,7 +25,13 @@ const app = express();
 app.set('view engine', 'hbs');
 
 // Listen to port 3000
-app.listen(8080, () => console.log('Listening at port 8080'));
+//app.listen(3000, () => console.log('Listening at port 3000'));
+var server = app.listen(8080, function () {
+  var host = server.address().address;
+  var port = server.address().port;
+
+  console.log("Example app listening at http://%s:%s", host, port);
+});
 
 // Needed for css and images to work
 app.use('/css', express.static(path.join(__dirname, 'css')));
@@ -232,22 +238,24 @@ app.post('/api/addchatanswer', urlencodedParser, function(req, res) {
  */
 app.post('/api/sendform', urlencodedParser, function(req, res) {
 
+  console.log("body: %j", req.body);
   let jsonObj = req.body;
-
   const sql = 'INSERT INTO reviews (id, shape, comfort, grade, free_word) VALUES ( ?, ?, ?, ?, ?)';
+  console.log("jsonObject: " + jsonObj.name + ", " + jsonObj.shape + ", " + jsonObj.comfort + ", " + jsonObj.grade + ", " + jsonObj.word);
 
   (async () => {
     try {
       const result = await query(sql, [
-        jsonObj.id,
+        jsonObj.name,
         jsonObj.shape,
         jsonObj.comfort,
         jsonObj.grade,
-        jsonObj.free_word]);
+        jsonObj.word]);
       let insertedId = result.insertId;
-      res.send('POST succesful: ' + req.body);
+      //res.send('POST succesful: ' + req.body);
+      res.status(200).send("POST succesful " + req.body);
     } catch (err) {
-      console.log('Insertion into tables was unsuccessful!' + err);
+      console.log('Insertion into tables was unsuccessful! ' + err);
     }
   })();
 });
