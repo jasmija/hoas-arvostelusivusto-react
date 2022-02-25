@@ -1,13 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 
-class main extends Component{
-  render()
-  {
-    return (
-        <div>
-          <p>Rekisteröitymissivu</p>
-        </div>
-    );
-  }
+const register = () => {
+
+  return (
+      <div>
+        <h2>Rekisteröitymissivu</h2>
+      </div>
+  );
 }
-export default main
+
+export default register;
