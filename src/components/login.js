@@ -1,3 +1,4 @@
+import React from 'react';
 
 const login = () => {
 
@@ -8,4 +9,4 @@ const login = () => {
   );
 
 }
-export default login
+export default login;

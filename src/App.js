@@ -3,14 +3,8 @@ import Login from "./components/login.js";
 import Register from "./components/register.js";
 import Home from "./components/main.js";
 import 'bootstrap/dist/css/bootstrap.css';
-import {
-  BrowserRouter as Router,
-  Switch, Route,
-} from 'react-router-dom';
-import {
-  Container
-  , Navbar, Nav
-}from 'react-bootstrap';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Container, Navbar, Nav } from 'react-bootstrap';
 
 const App = () => {
 
