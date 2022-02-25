@@ -5,6 +5,10 @@ const bodyParser = require('body-parser');
 const path = require('path');
 require('dotenv');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const secrets = require('./config/secrets');
 
 // Set path to ".env"-file for variable "dotenv"
 require('dotenv').config();
@@ -259,3 +263,94 @@ app.post('/api/sendform', urlencodedParser, function(req, res) {
     }
   })();
 });
+
+/**
+ * Add new user to database and hash password
+ */
+app.post('/api/adduser', urlencodedParser, function(req, res) {
+  const username = req.body.username;
+  let pwd = req.body.password;
+
+  (async () => {
+    try {
+      const hashedPassword = await bcrypt.hash(pwd, 10);
+
+      let sql = 'SELECT * FROM accounts WHERE username = ?';
+
+      let result = await query(sql, [username]);
+      if (result.length === 0) {
+        pwd = hashedPassword;
+        console.log('Hashed password: ' + pwd);
+
+        sql = 'INSERT INTO accounts (username, password) VALUES (?, ?)';
+
+        await query(sql, [username, pwd]);
+        res.status(201).send();
+        console.log('\nUser added!');
+        console.log('User: ' + username + ', password: ' + pwd);
+      } else {
+        res.status(202).send();
+        console.log('User already registered (user: "' + username + '" ).');
+      }
+    } catch (error) {
+      console.log('ERROR! ' + error);
+    }
+  })();
+});
+
+/**
+ * User login.
+ */
+app.post('/login', urlencodedParser, function(req, res) {
+  const username = req.body.username;
+  let pwd = req.body.password;
+
+  (async () => {
+    try {
+      const hashedPassword = await bcrypt.hash(pwd, 10);
+
+      let sql = 'SELECT * FROM accounts WHERE username = ?';
+
+      let result = await query(sql, [username]);
+      if (result.length === 0) {
+        res.status(202).send('User not found.');
+        console.log('\nUser not found!');
+      }
+      if (!result || !(await bcrypt.compare(pwd, result[0].password))) {
+        res.status(203).send('User or password wrong.');
+        console.log('\nUser or password wrong.');
+      } else {
+        let foundHashed = (result[0].password).toString();
+        const match = await bcrypt.compare(pwd, result[0].password);
+        if (match) {
+          console.log('Login ok.');
+
+          let user = {
+            username: req.body.username,
+            password: foundHashed,
+          };
+          const accessToken = jwt.sign({name: user}, secrets.jwtSecret,
+              {expiresIn: '1h'}); // expires in one hour
+          res.status(201).json({username, accessToken: accessToken});
+        }
+      }
+    } catch (error) {
+      console.log('/login ERROR! ' + error);
+    }
+  })();
+});
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  console.log('Token from server: ' + token);
+  if (token == null) return res.sendStatus(401);
+  jwt.verify(token, secrets.jwtSecret, (err, user) => {
+    console.log(err);
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    console.log('User (decoded): ' + JSON.stringify(user));
+    next();
+  });
+}
