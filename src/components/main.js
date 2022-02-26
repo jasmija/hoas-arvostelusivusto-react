@@ -1,5 +1,5 @@
 import {Button, Form, Modal} from "react-bootstrap";
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from "axios";
 
 const Main = () => {
@@ -18,7 +18,11 @@ const Main = () => {
   const [formMessage, setMessage] = useState(''); //arvostelu lisätty onnistuneesti teksti
   const [showMessage, setShowMessage] = useState(false); //tekstin näyttäminen/piilotus
 
-  const content = {
+  const [apartments, setApartments] = useState([0])
+  const [name, setName] = useState("");
+
+
+  const ul = {
     display: "flex",
     flexWrap: "wrap",
   }
@@ -97,25 +101,66 @@ const Main = () => {
           reset()
         })
   }
-    return (
-        <div>
-          <ul style={content}>
-              <figure>
-                <img src="img/kimpitie.jpg" alt="kimpitie"/>
-                <figcaption>
-                  <h3 className="header"></h3>
-                </figcaption>
-                <Button onClick={handleShow} variant="light" className="rate">Arvostele</Button>
-              </figure>
 
+  function getName(id) {
+
+    const apartment = id;
+    console.log("Inside getName")
+    axios
+        .get('http://localhost:8080/api/apartments?id='+ apartment)
+        .then(response => {
+          console.log('Vastaus: ' + JSON.stringify(response.data))
+          let json;
+          json = JSON.stringify(response.data);
+
+          if (json.length > 0) {
+            console.log("json pituus isompi kuin 0")
+            console.log("osoite " + response.data.address)
+            setName(response.data)
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
+  }
+
+  function onclickFunction() {
+    handleShow()
+    //getName(id)
+  }
+
+  useEffect(() =>{
+
+    axios
+        .get('http://localhost:8080/api/apartments')
+        .then(response => {
+          console.log('Vastaus: ' + JSON.stringify(response.data))
+          let json;
+          json = JSON.stringify(response.data);
+          console.log("json " + json.address)
+
+          if (json.length > 0) {
+            console.log("json pituus isompi kuin 0")
+            console.log(response.data)
+            setApartments(response.data)
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
+  },[])
+
+  return (
+        <div style={ul}>
+          {apartments.map(content => (
+          <ul id="apartments"  key={''+content.id}>
               <figure>
-                <img src="img/siltakuja.jpg" alt="siltakuja"/>
+                <img id="image" src="img/kimpitie.jpg" alt="kimpitie"/>
                 <figcaption>
-                  <h3 className="header"></h3>
+                  <h3>{content.address}</h3>
                 </figcaption>
-                <Button onClick={handleShow} variant="light" className="rate">Arvostele</Button>
+                <Button onClick={onclickFunction} variant="light" className="rate">Arvostele</Button>
               </figure>
           </ul>
+          ))}
 
           <Modal
               show={show}
@@ -124,30 +169,34 @@ const Main = () => {
               keyboard={false}
           >
             <Modal.Header closeButton onClick={reset}>
-              <Modal.Title>Arvostelu kohteeseen: Asunnon nimi</Modal.Title>
+
+              <Modal.Title >Arvostelu kohteeseen: {name}</Modal.Title>
+
             </Modal.Header>
             <Modal.Body>
               <Form form id="form" noValidate validated={validated} onSubmit={addRating}>
                 <Form.Group>
                   <Form.Label>Kunto</Form.Label>
-                  <Form.Control
-                      onChange={handleShapeChange}
-                      required
-                      type="text"
-                      placeholder="kunto"
-                  />
+                  <select value={newShape} onChange={handleShapeChange} required>
+                    <option value="Erinomainen">Erinomainen</option>
+                    <option value="Kiitettävä">Kiitettävä</option>
+                    <option value="Hyvä">Hyvä</option>
+                    <option value="Tyydyttävä">Tyydyttävä</option>
+                    <option value="Välttävä">Välttävä</option>
+                  </select>
                   <Form.Control.Feedback type="invalid">Lisää kunto</Form.Control.Feedback>
                 </Form.Group>
                 <br/>
 
                 <Form.Group>
                   <Form.Label>Viihtyvyys</Form.Label>
-                  <Form.Control
-                      onChange={handleComfortChange}
-                      required
-                      type="text"
-                      placeholder="viihtyvyys"
-                  />
+                  <select value={newComfort} onChange={handleComfortChange} required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
                   <Form.Control.Feedback type="invalid">Lisää viihtyvyys</Form.Control.Feedback>
                 </Form.Group>
                 <br/>
