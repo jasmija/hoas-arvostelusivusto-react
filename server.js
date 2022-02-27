@@ -103,7 +103,7 @@ app.get('/api/address', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error!' + err);
+      console.log('Database error! api/address' + err);
     }
   })();
 });

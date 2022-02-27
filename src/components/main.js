@@ -1,35 +1,39 @@
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Form, Modal, Table} from "react-bootstrap";
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
 
 const Main = () => {
 
-  const [newRating, setNewRating] = useState("")
+  //Modaalin kanssa säätäminen kesken, ei toimi vielä
+
+  const [newId, setNewId] = useState("")
   const [newShape, setNewShape] = useState("")
   const [newComfort, setNewComfort] = useState("")
   const [newGrade, setNewGrade] = useState("")
   const [newWord, setNewWord] = useState("")
-
-  const [show, setShow] = useState(false);
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
   const [validated, setValidate] = useState("")
 
   const [formMessage, setMessage] = useState(''); //arvostelu lisätty onnistuneesti teksti
   const [showMessage, setShowMessage] = useState(false); //tekstin näyttäminen/piilotus
 
-  const [apartments, setApartments] = useState([0])
-  const [name, setName] = useState("");
+  const [apartments, setApartments] = useState([0]) //asunnot tietokannasta sivulle
+  const [name, setName] = useState([0]); //asuntojen nimet otsikoksi
 
+  const [showModal, setShowModal] = useState(false); //modaali
+  const handleCloseModal = () => setShowModal(false); //modaali sulku
+  const [showRatingContent, setShowRatings] = useState(false); //turha ehkä
+  const [showFormContent, setShowForm] = useState(false);  //turha ehkä
+  const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
 
   const ul = {
     display: "flex",
     flexWrap: "wrap",
   }
 
+  //id:tä varten
   const handleRatingChange = (event) => {
     console.log(event.target.value)
-    setNewRating(event.target.value)
+    setNewId(event.target.value)
   }
 
   const handleShapeChange = (event) => {
@@ -57,6 +61,61 @@ const Main = () => {
     setValidate(false)
   }
 
+  function makeQueryForAddNewReview(id) {
+    const apartment = id;
+    console.log("id "+ apartment)
+
+    axios
+        .get('http://localhost:8080/api/address?id='+ apartment)
+        .then(response => {
+          console.log('Vastaus: ' + JSON.stringify(response.data))
+          let json = JSON.stringify(response.data)
+          setName(response.data)
+          setNewId(response.data)
+          if (json.length > 0) {
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
+  }
+
+  //Asuntojen osoitteet otsikoksi
+  useEffect(() =>{
+    axios
+        .get('http://localhost:8080/api/apartments')
+        .then(response => {
+          console.log('Vastaus: ' + JSON.stringify(response.data))
+          let json;
+          json = JSON.stringify(response.data);
+          console.log("json " + json.address)
+          json = response.data;
+
+          if (json.length > 0) {
+            console.log("json pituus isompi kuin 0")
+            console.log(response.data)
+            setApartments(response.data)
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
+  },[])
+
+  function showForm(id) {
+    console.log("onclickfunction function")
+    console.log("id passed " + id)
+    //setNewRating("" + id);
+    setShowModal(true)
+    makeQueryForAddNewReview(id)
+  }
+
+  function showReviews(id){
+    console.log("showReviews function")
+    console.log("id passed " + id)
+    //makeQueryForAddNewReview(1)
+    setShowModal(true)
+    showRatings(id)
+  }
+
   const addRating = event =>{
 
     console.log("ADD RATING")
@@ -73,7 +132,7 @@ const Main = () => {
     setValidate(true);
 
     const ratingObject = {
-      name: 1,
+      id: 1,
       shape: newShape,
       comfort: newComfort,
       grade: newGrade,
@@ -81,97 +140,64 @@ const Main = () => {
     }
     console.log(ratingObject);
 
-    axios
-        .post('http://localhost:8080/api/sendform', ratingObject)
-        .then(response => {
-          console.log('ratingObject: ' + JSON.stringify(ratingObject))
-          console.log(response)
+      axios
+          .post('http://localhost:8080/api/sendform', ratingObject)
+          .then(response => {
+            console.log('ratingObject: ' + JSON.stringify(ratingObject))
+            console.log(response)
 
-          setNewRating('')
-          setNewShape('')
-          setNewComfort('')
-          setNewGrade('')
-          setNewWord('')
-          if(response.status === 200)
-            setMessage('Uuden arvostelun lisääminen onnistui!')
-          else if(response.status === 401)
-            setMessage('Uuden arvostelun lisääminen epäonnistui, täytä puuttuvat kentät!')
-          //setMessage("Tapahtuma lisätty onnistuneesti")
-          setShowMessage(true)
-          reset()
-        })
+            setNewId('')
+            setNewShape('')
+            setNewComfort('')
+            setNewGrade('')
+            setNewWord('')
+            if(response.status === 200)
+              setMessage('Uuden arvostelun lisääminen onnistui!')
+            else if(response.status === 401)
+              setMessage('Uuden arvostelun lisääminen epäonnistui, täytä puuttuvat kentät!')
+            setShowMessage(true)
+            reset()
+          })
   }
 
-  function getName(id) {
-
-    const apartment = id;
-    console.log("Inside getName")
-    axios
-        .get('http://localhost:8080/api/apartments?id='+ apartment)
-        .then(response => {
-          console.log('Vastaus: ' + JSON.stringify(response.data))
-          let json;
-          json = JSON.stringify(response.data);
-
-          if (json.length > 0) {
-            console.log("json pituus isompi kuin 0")
-            console.log("osoite " + response.data.address)
-            setName(response.data)
-          } else {
-            console.log("Ei löytynyt yhtäkään asuntoa");
-          }
-        })
-  }
-
-  function onclickFunction() {
-    handleShow()
-    //getName(id)
-  }
-
-  useEffect(() =>{
+  //Asunnon kaikki arvostelut
+  function showRatings(id){
+    console.log("SHOW RATING")
+    console.log("passed id: " + id)
 
     axios
-        .get('http://localhost:8080/api/apartments')
+        .get('http://localhost:8080/api/results?id='+id)
         .then(response => {
           console.log('Vastaus: ' + JSON.stringify(response.data))
-          let json;
-          json = JSON.stringify(response.data);
-          console.log("json " + json.address)
-
-          if (json.length > 0) {
-            console.log("json pituus isompi kuin 0")
-            console.log(response.data)
-            setApartments(response.data)
-          } else {
-            console.log("Ei löytynyt yhtäkään asuntoa");
-          }
+          setRatings(response.data)
         })
-  },[])
+  }
 
   return (
         <div style={ul}>
           {apartments.map(content => (
-          <ul id="apartments"  key={''+content.id}>
+          <ul className="apartments"  key={''+content.id}>
               <figure>
                 <img id="image" src="img/kimpitie.jpg" alt="kimpitie"/>
                 <figcaption>
                   <h3>{content.address}</h3>
                 </figcaption>
-                <Button onClick={onclickFunction} variant="light" className="rate">Arvostele</Button>
+                <Button  id={content.id} onClick={() => showForm(content.id)} variant="light" className="rateButtons">Arvostele</Button>
+                <Button id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso arvostelut</Button>
               </figure>
           </ul>
           ))}
 
           <Modal
-              show={show}
-              onHide={handleClose}
+              show={showModal}
+              onHide={handleCloseModal}
               backdrop="static"
               keyboard={false}
           >
             <Modal.Header closeButton onClick={reset}>
-
-              <Modal.Title >Arvostelu kohteeseen: {name}</Modal.Title>
-
+              {name.map(t => (
+              <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: {t.address}</Modal.Title>
+              ))}
             </Modal.Header>
             <Modal.Body>
               <Form form id="form" noValidate validated={validated} onSubmit={addRating}>
@@ -231,6 +257,24 @@ const Main = () => {
                 <br/>
               </Form>
             </Modal.Body>
+
+            <div>
+              <Table striped>
+              <tbody>
+              {ratings.map(c => (
+                  <tr key={''+c.id}>
+                    <td>
+                      <p>{c.address}</p>
+                      <p>{c.shape}</p>
+                      <p>{c.comfort}</p>
+                      <p>{c.grade}</p>
+                      <p>{c.free_word}</p>
+                    </td>
+                  </tr>
+              ))}
+                </tbody>
+              </Table>
+            </div>
           </Modal>
         </div>
     );
