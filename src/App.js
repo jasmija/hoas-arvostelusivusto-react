@@ -4,7 +4,7 @@ import Register from './components/register';
 import Home from './components/main';
 import 'bootstrap/dist/css/bootstrap.css';
 import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
-import {Navbar, Nav} from 'react-bootstrap';
+import {Navbar, Nav, Form, FormControl, Button} from 'react-bootstrap';
 import {useEffect, useState} from 'react';
 
 const App = () => {
@@ -35,9 +35,18 @@ const App = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="nav navbar-nav ms-auto">
-              <Nav.Link as={Link} to="/">Etusivu</Nav.Link>
-              <Nav.Link as={Link} to="/register">Rekisteröidy</Nav.Link>
-              <Nav.Link as={Link} to="/login">Kirjaudu</Nav.Link>
+              <Form className="d-flex">
+                <FormControl
+                    type="search"
+                    placeholder="Hae kohdetta..."
+                    className="me-2"
+                    aria-label="Search"
+                />
+                <Button variant="outline-secondary">Hae</Button>
+              </Form>
+              <Button variant="secondary"><Nav.Link as={Link} to="/">Etusivu</Nav.Link></Button>
+              {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/register">Rekisteröidy</Nav.Link></Button>}
+              {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/login">Kirjaudu</Nav.Link></Button>}
             </Nav>
             {userBoolean && <div id="userControl">
               <p id="loggedInUser">Hei {user.username}</p>

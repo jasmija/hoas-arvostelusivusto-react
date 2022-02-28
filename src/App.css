@@ -39,7 +39,10 @@
 
 .nav-link {
   color: white !important;
-  margin: 5px;
+}
+
+.nav > button {
+  margin-left: 20px;
 }
 
 #loggedInUser {
