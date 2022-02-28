@@ -2,11 +2,11 @@
 const mysql = require('mysql');
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
-require('dotenv');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const url = require('url');
+require('dotenv');
 
 const secrets = require('./config/secrets');
 
@@ -25,41 +25,26 @@ const util = require('util');
 const query = util.promisify(connection.query).bind(connection);
 const app = express();
 
-// Use handlebars
-app.set('view engine', 'hbs');
+// Listen to port 8080
+const server = app.listen(8080, function() {
+  const host = server.address().address;
+  const port = server.address().port;
 
-// Listen to port 3000
-//app.listen(3000, () => console.log('Listening at port 3000'));
-var server = app.listen(8080, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log("Example app listening at http://%s:%s", host, port);
+  console.log('Example app listening at http://%s:%s', host, port);
 });
-
-// Needed for css and images to work
-app.use('/css', express.static(path.join(__dirname, 'css')));
-app.use('/img', express.static(path.join(__dirname, 'img')));
-app.use('/js', express.static(path.join(__dirname, 'js')));
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept',
   );
   next();
 });
-
-// Define routes
-//app.use('/', require('./routes/pages'));
-//app.use('/', require('./routes/auth'));
-
-const url = require('url');
 
 /**
  * Send SQL query to database to get reviews where id = desired apartment id
@@ -251,10 +236,11 @@ app.post('/api/addchatanswer', urlencodedParser, function(req, res) {
  */
 app.post('/api/sendform', urlencodedParser, function(req, res) {
 
-  console.log("body: %j", req.body);
+  console.log('body: %j', req.body);
   let jsonObj = req.body;
   const sql = 'INSERT INTO reviews (id, shape, comfort, grade, free_word) VALUES ( ?, ?, ?, ?, ?)';
-  console.log("jsonObject: " + jsonObj.name + ", " + jsonObj.shape + ", " + jsonObj.comfort + ", " + jsonObj.grade + ", " + jsonObj.word);
+  console.log('jsonObject: ' + jsonObj.name + ', ' + jsonObj.shape + ', ' +
+      jsonObj.comfort + ', ' + jsonObj.grade + ', ' + jsonObj.word);
 
   (async () => {
     try {
@@ -266,7 +252,7 @@ app.post('/api/sendform', urlencodedParser, function(req, res) {
         jsonObj.word]);
       let insertedId = result.insertId;
       //res.send('POST succesful: ' + req.body);
-      res.status(200).send("POST succesful " + req.body);
+      res.status(200).send('POST succesful ' + req.body);
     } catch (err) {
       console.log('Insertion into tables was unsuccessful! ' + err);
     }

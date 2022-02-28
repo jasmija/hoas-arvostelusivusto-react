@@ -1,5 +1,5 @@
-import {Button, Form, Modal, Table} from "react-bootstrap";
-import React, {useEffect, useState} from 'react';
+import { Button, Form, Modal, Table } from "react-bootstrap";
+import React, { useEffect, useState } from 'react';
 import axios from "axios";
 
 const Main = () => {
