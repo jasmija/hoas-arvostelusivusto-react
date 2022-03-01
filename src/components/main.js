@@ -1,10 +1,9 @@
-import { Button, Form, Modal, Table } from "react-bootstrap";
+import { Button, Form, Modal, Table, ListGroup, Accordion, Toast, ToastContainer} from "react-bootstrap";
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
+import Login from './login';
 
 const Main = () => {
-
-  //Modaalin kanssa säätäminen kesken, ei toimi vielä
 
   const [newId, setNewId] = useState("")
   const [newShape, setNewShape] = useState("")
@@ -19,18 +18,25 @@ const Main = () => {
   const [apartments, setApartments] = useState([0]) //asunnot tietokannasta sivulle
   const [name, setName] = useState([0]); //asuntojen nimet otsikoksi
 
+  const [chat, setChat] = useState([0]); //chatin sisältö
+  const [content, setChatContent] = useState([0]); //chatin sisältö
+  const [showChat, setShowChat] = useState(false); //chat sisällön näyttäminen/piilotus
+
   const [showModal, setShowModal] = useState(false); //modaali
   const handleCloseModal = () => setShowModal(false); //modaali sulku
-  const [showRatingContent, setShowRatings] = useState(false); //turha ehkä
-  const [showFormContent, setShowForm] = useState(false);  //turha ehkä
+
+  const [showModal2, setShowModal2] = useState(false); //modaali
+  const handleCloseModal2= () => setShowModal2(false); //modaali sulku
+
   const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
-  const [images, setImages] = useState([0]) //arvostelut tietokannasta
   const imagePath = ["img/kimpitie.jpg", "img/berliininkatu.jpg", "img/hakaniemenranta.jpg", "img/siltakuja.jpg", "img/vaskivuorentie.jpg",  "img/juusintie.jpg", "img/kilonkallio.jpg","img/haukilahdenkuja.jpg", "img/leppäsuonkatu.jpg", "img/majurinkulma.jpg", "img/servinkuja.jpg",  "img/akanapolku.jpg"];
-  //const imagePath = ["img/kimpitie.jpg"];
 
   const ul = {
     display: "flex",
     flexWrap: "wrap",
+    justifyContent:'center',
+    alignItems:'center',
+    padding: 10,
   }
 
   //id:tä varten
@@ -64,6 +70,7 @@ const Main = () => {
     setValidate(false)
   }
 
+  //Klikatun asunnon nimi asetetaan modaaalin otsikoksi
   function makeQueryForAddNewReview(id) {
     const apartment = id;
     console.log("id "+ apartment)
@@ -82,7 +89,7 @@ const Main = () => {
         })
   }
 
-  //Asuntojen osoitteet otsikoksi
+  //Asuntojen osoitteet otsikoksi kun sivu ladataan
   useEffect(() =>{
     axios
         .get('http://localhost:8080/api/apartments')
@@ -97,14 +104,24 @@ const Main = () => {
             console.log("json pituus isompi kuin 0")
             console.log(response.data)
             setApartments(response.data)
-            /*for (let i=0; i < imagePath.length; i++){
-              let image = imagePath[i]
-              setImages(image)
-            }*/
-            //let image = imagePath[0]
-            console.log("imagepath " + imagePath[0])
-            let image = imagePath[0]
             //setImages(imagePath)
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
+
+    axios
+        .get('http://localhost:8080/api/chat')
+        .then(response => {
+          console.log('Vastaus chat: ' + JSON.stringify(response.data))
+          let json;
+          json = JSON.stringify(response.data);
+          json = response.data;
+
+          if (json.length > 0) {
+            console.log("json pituus isompi kuin 0")
+            console.log(response.data)
+            setChat(response.data)
           } else {
             console.log("Ei löytynyt yhtäkään asuntoa");
           }
@@ -112,7 +129,7 @@ const Main = () => {
   },[])
 
   function showForm(id) {
-    console.log("onclickfunction function")
+    console.log("showForm function function")
     console.log("id passed " + id)
     //setNewRating("" + id);
     setShowModal(true)
@@ -123,8 +140,33 @@ const Main = () => {
     console.log("showReviews function")
     console.log("id passed " + id)
     //makeQueryForAddNewReview(1)
-    setShowModal(true)
+    setShowModal2(true)
+    makeQueryForAddNewReview(id)
     showRatings(id)
+  }
+
+  /*function showAnswers(id){
+    console.log("showAnswers function")
+    //setShowChat(true)
+    openChat(id)
+  }*/
+
+  //Chat kysymysten vastaukset
+  function openChat(id) {
+
+    axios
+        .get('http://localhost:8080/api/chatcontent?id='+ id)
+        .then(response => {
+          console.log('Vastaus chat content: ' + JSON.stringify(response.data))
+          let json = JSON.stringify(response.data)
+          //const ReactElement = React.createElement('p', null, response.data)
+          //setShowChat(true)
+          if (json.length > 0) {
+            setChatContent(response.data)
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
   }
 
   const addRating = event =>{
@@ -151,53 +193,90 @@ const Main = () => {
     }
     console.log(ratingObject);
 
-      axios
-          .post('http://localhost:8080/api/sendform', ratingObject)
-          .then(response => {
-            console.log('ratingObject: ' + JSON.stringify(ratingObject))
-            console.log(response)
+    axios
+        .post('http://localhost:8080/api/sendform', ratingObject)
+        .then(response => {
+          console.log('ratingObject: ' + JSON.stringify(ratingObject))
+          console.log(response)
 
-            setNewId('')
-            setNewShape('')
-            setNewComfort('')
-            setNewGrade('')
-            setNewWord('')
-            if(response.status === 200)
-              setMessage('Uuden arvostelun lisääminen onnistui!')
-            else if(response.status === 401)
-              setMessage('Uuden arvostelun lisääminen epäonnistui, täytä puuttuvat kentät!')
-            setShowMessage(true)
-            reset()
-          })
+          setNewId('')
+          setNewShape('')
+          setNewComfort('')
+          setNewGrade('')
+          setNewWord('')
+          if(response.status === 200)
+            setMessage('Uuden arvostelun lisääminen onnistui!')
+          else if(response.status === 401)
+            setMessage('Uuden arvostelun lisääminen epäonnistui, täytä puuttuvat kentät!')
+          setShowMessage(true)
+          reset()
+        })
   }
 
-  //Asunnon kaikki arvostelut
+  //Arvostelujen keskiarvo
+  function countAverage(json) {
+
+    let sumcomfort = 0;
+    let sumgrade = 0;
+    let sumshape = 0;
+
+    for (let i = 0; i < json.length; i++) {
+      sumcomfort = sumcomfort + json[i].comfort;
+      sumgrade = sumgrade + json[i].grade;
+
+      if (json[i].shape === 'Välttävä') {
+        json[i].shape = 1;
+      } else if (json[i].shape === 'Tyydyttävä') {
+        json[i].shape = 2;
+      } else if (json[i].shape === 'Hyvä') {
+        json[i].shape = 3;
+      } else if (json[i].shape === 'Kiitettävä') {
+        json[i].shape = 4;
+      } else if (json[i].shape === 'Erinomainen') {
+        json[i].shape = 5;
+      }
+      sumshape = sumshape + json[i].shape;
+    }
+
+    const averageshape = (sumshape / json.length).toFixed(0);
+    const averagecomfort = (sumcomfort / json.length).toFixed(0);
+    const averagegrade = (sumgrade / json.length).toFixed(0);
+
+    console.log("averageshape " + averageshape + ", averagecomfort " + averagecomfort + ", " + "averagegrade " + averagegrade)
+
+  }
+
+  //Näytetäään asunnon kaikki arvostelut
   function showRatings(id){
     console.log("SHOW RATING")
     console.log("passed id: " + id)
+    let json;
 
     axios
         .get('http://localhost:8080/api/results?id='+id)
         .then(response => {
           console.log('Vastaus: ' + JSON.stringify(response.data))
           setRatings(response.data)
+          json = response.data;
+          countAverage(json);
         })
   }
 
   return (
+      <div>
         <div style={ul}>
 
           {apartments.map(content => (
-          <ul className="apartments"  key={''+content.id}>
-              <figure>
-                <img  id="image" src={""+content.image} alt="kimpitie"/>
-                <figcaption>
-                  <h3>{content.address}</h3>
-                </figcaption>
-                <Button  id={content.id} onClick={() => showForm(content.id)} variant="light" className="rateButtons">Arvostele</Button>
-                <Button id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso arvostelut</Button>
-              </figure>
-          </ul>
+              <ul className="apartments"  key={''+content.id}>
+                <figure>
+                  <img  id="image" src={""+content.image} alt="kimpitie"/>
+                  <figcaption style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white', display: "flex", flexWrap: "wrap"}} >
+                    <h3>{content.address}</h3>
+                    <Button style={{margin: 2}} id={content.id} onClick={() => showForm(content.id)} variant="light" className="rateButtons">Arvostele</Button>
+                    <Button style={{margin: 2}} id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso arvostelut</Button>
+                  </figcaption>
+                </figure>
+              </ul>
           ))}
 
           <Modal
@@ -208,7 +287,7 @@ const Main = () => {
           >
             <Modal.Header closeButton onClick={reset}>
               {name.map(t => (
-              <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: {t.address}</Modal.Title>
+                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: {t.address}</Modal.Title>
               ))}
             </Modal.Header>
             <Modal.Body>
@@ -269,26 +348,72 @@ const Main = () => {
                 <br/>
               </Form>
             </Modal.Body>
+          </Modal>
 
-            <div>
-              <Table striped>
-              <tbody>
-              {ratings.map(c => (
-                  <tr key={''+c.id}>
-                    <td>
-                      <p>{c.address}</p>
-                      <p>{c.shape}</p>
-                      <p>{c.comfort}</p>
-                      <p>{c.grade}</p>
-                      <p>{c.free_word}</p>
-                    </td>
-                  </tr>
+          <Modal
+              show={showModal2}
+              onHide={handleCloseModal2}
+              backdrop="static"
+              keyboard={false}>
+            <Modal.Header closeButton>
+              {name.map(t => (
+                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelut kohteesta: {t.address}</Modal.Title>
               ))}
+            </Modal.Header>
+            <Modal.Body>
+              <Table striped>
+                <tbody>
+                {ratings.map(c => (
+                    <tr key={''+c.id}>
+                      <td>
+                        <p>{c.address}</p>
+                        <p>{c.shape}</p>
+                        <p>{c.comfort}</p>
+                        <p>{c.grade}</p>
+                        <p>{c.free_word}</p>
+                      </td>
+                    </tr>
+                ))}
                 </tbody>
               </Table>
-            </div>
+            </Modal.Body>
           </Modal>
         </div>
-    );
+
+        <div>
+          <h3>Keskustelupalsta</h3>
+          {chat.map(chat => (
+              <Accordion defaultActiveKey="0">
+                <Accordion.Item eventKey="0">
+                  <Accordion.Header key={''+chat.id} >{chat.header}</Accordion.Header>
+                  <Accordion.Body>
+                    Vastaukset
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+          ))}
+        </div>
+
+        {chat.map(chat => (
+            <ToastContainer>
+              <Toast style={{margin: 10}}>
+                <Toast.Header>
+                  <img src="" className="rounded me-2" alt="" />
+                  <strong className="me-auto">{chat.username}</strong>
+                  <small>11 mins ago</small>
+                </Toast.Header>
+                <Toast.Body key={''+chat.id}>{chat.header}</Toast.Body>
+                <Button variant={'dark'} >Vastaa</Button>
+              </Toast>
+            </ToastContainer>
+        ))}
+
+      </div>
+  );
 }
 export default Main
+
+
+
+
+
