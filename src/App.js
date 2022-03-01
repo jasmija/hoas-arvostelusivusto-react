@@ -3,45 +3,74 @@ import Login from './components/login';
 import Register from './components/register';
 import Home from './components/main';
 import 'bootstrap/dist/css/bootstrap.css';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import {Navbar, Nav, Form, FormControl, Button} from 'react-bootstrap';
+import {useEffect, useState} from 'react';
 
 const App = () => {
 
+  const [user, setUser] = useState();
+  const [userBoolean, setUserBoolean] = useState(false);
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem('user');
+    if (loggedInUser) {
+      setUserBoolean(true);
+      const foundUser = JSON.parse(loggedInUser);
+      setUser(foundUser);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    setUserBoolean(false);
+    localStorage.clear();
+    window.location.href = '/';
+  };
+
   return (
-      <div id="container">
       <Router>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-          <Container>
-            <a href="/"><img src="img/logo.png" alt='HOAS-arvostelut-logo'/></a>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="header">
-                <Nav.Link as={Link} to="/">Home</Nav.Link>
-                <Nav.Link as={Link} to="/register">Register</Nav.Link>
-                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-              </Nav>
-            </Navbar.Collapse>
-          </Container>
+          <a href="/"><img src="img/logo.png" alt="HOAS-arvostelut-logo"
+                           style={{maxHeight: 80}}/></a>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="nav navbar-nav ms-auto">
+              <Form className="d-flex">
+                <FormControl
+                    type="search"
+                    placeholder="Hae kohdetta..."
+                    className="me-2"
+                    aria-label="Search"
+                />
+                <Button variant="outline-secondary">Hae</Button>
+              </Form>
+              <Button variant="secondary"><Nav.Link as={Link} to="/">Etusivu</Nav.Link></Button>
+              {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/register">Rekisteröidy</Nav.Link></Button>}
+              {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/login">Kirjaudu</Nav.Link></Button>}
+            </Nav>
+            {userBoolean && <div id="userControl">
+              <p id="loggedInUser">Hei {user.username}</p>
+              <Nav.Link id="logOutText" onClick={handleLogout}>Kirjaudu ulos</Nav.Link>
+            </div>}
+          </Navbar.Collapse>
         </Navbar>
 
         <Switch>
           <Route path="/login">
-            <Login />
+            <Login/>
           </Route>
           <Route path="/register">
-            <Register />
+            <Register/>
           </Route>
 
           {/*Always keep "<Route path="/"> last in <Switch>*/}
           <Route path="/">
-            <Home />
+            <Home/>
           </Route>
 
         </Switch>
-        </Router>
-      </div>
-  )
+      </Router>
+  );
 
-}
-export default App
+};
+export default App;

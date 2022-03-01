@@ -36,3 +36,33 @@
     transform: rotate(360deg);
   }
 }
+
+.nav-link {
+  color: white !important;
+}
+
+.nav > button {
+  margin-left: 20px;
+}
+
+#loggedInUser {
+  color: white !important;
+  margin: 0;
+  padding: 0.5rem;
+}
+
+.navbar {
+  padding: 5%;
+}
+
+#userControl {
+  text-align: center;
+  margin-left: 20px;
+  border-style: solid;
+  border-color: white;
+  border-width: 0.5px;
+}
+
+#logOutText {
+  color: gray !important;
+}
