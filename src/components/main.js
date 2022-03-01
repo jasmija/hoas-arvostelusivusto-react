@@ -24,6 +24,9 @@ const Main = () => {
   const [showRatingContent, setShowRatings] = useState(false); //turha ehkä
   const [showFormContent, setShowForm] = useState(false);  //turha ehkä
   const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
+  const [images, setImages] = useState([0]) //arvostelut tietokannasta
+  const imagePath = ["img/kimpitie.jpg", "img/berliininkatu.jpg", "img/hakaniemenranta.jpg", "img/siltakuja.jpg", "img/vaskivuorentie.jpg",  "img/juusintie.jpg", "img/kilonkallio.jpg","img/haukilahdenkuja.jpg", "img/leppäsuonkatu.jpg", "img/majurinkulma.jpg", "img/servinkuja.jpg",  "img/akanapolku.jpg"];
+  //const imagePath = ["img/kimpitie.jpg"];
 
   const ul = {
     display: "flex",
@@ -94,6 +97,14 @@ const Main = () => {
             console.log("json pituus isompi kuin 0")
             console.log(response.data)
             setApartments(response.data)
+            /*for (let i=0; i < imagePath.length; i++){
+              let image = imagePath[i]
+              setImages(image)
+            }*/
+            //let image = imagePath[0]
+            console.log("imagepath " + imagePath[0])
+            let image = imagePath[0]
+            //setImages(imagePath)
           } else {
             console.log("Ei löytynyt yhtäkään asuntoa");
           }
@@ -132,7 +143,7 @@ const Main = () => {
     setValidate(true);
 
     const ratingObject = {
-      id: 1,
+      id: 2,
       shape: newShape,
       comfort: newComfort,
       grade: newGrade,
@@ -175,10 +186,11 @@ const Main = () => {
 
   return (
         <div style={ul}>
+
           {apartments.map(content => (
           <ul className="apartments"  key={''+content.id}>
               <figure>
-                <img id="image" src="img/kimpitie.jpg" alt="kimpitie"/>
+                <img  id="image" src={""+content.image} alt="kimpitie"/>
                 <figcaption>
                   <h3>{content.address}</h3>
                 </figcaption>

@@ -115,8 +115,7 @@ app.get('/api/apartments', function(req, res) {
   const q = url.parse(req.url, true).query;
   let string;
 
-  const sql = 'SELECT id, address'
-      + ' FROM apartments';
+  const sql = 'SELECT id, address, image FROM apartments';
 
   (async () => {
     try {
