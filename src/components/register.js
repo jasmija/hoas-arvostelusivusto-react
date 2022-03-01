@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Form, Button, Col } from 'react-bootstrap';
 import axios from 'axios';
+import '../css/login.css';
 
 const Register = () => {
   const marginTop = {
@@ -53,14 +54,15 @@ const Register = () => {
   return (
       <div style={{display: 'flex', justifyContent: 'center'}}>
       <Form noValidate ref={formReset} validated={validated} onSubmit={addInfo}>
+        <h3><Form.Label>Rekisteröidy</Form.Label></h3>
         <Col className="mb-3">
           <Form.Group as={Col}>
-            <Form.Label style={marginTop}>Käyttäjätunnus:</Form.Label>
             <Form.Control ref={usernameFocus}
                           autoFocus
                           required
                           type="text"
                           onChange={event => setUsernameValue(event.target.value)}
+                          placeholder="Käyttäjänimi"
             />
             <Form.Control.Feedback type="invalid">
               Käyttäjänimi vaaditaan.
@@ -69,11 +71,11 @@ const Register = () => {
           </Form.Group>
 
           <Form.Group as={Col}>
-            <Form.Label style={marginTop}>Salasana:</Form.Label>
             <Form.Control
                 type="password"
                 required
                 onChange={event => setPwdValue(event.target.value)}
+                placeholder="Salasana"
             />
             <Form.Control.Feedback type="invalid">
               Salasana vaaditaan.
@@ -82,9 +84,7 @@ const Register = () => {
             {success && <div className="alert alert-success" role="alert" style={marginTop}>Rekisteröityminen onnistui.</div>}
             {failure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjä on jo olemassa.</div>}
           </Form.Group>
-
         </Col>
-
         <Button type="submit" variant="success">Rekisteröidy</Button>
       </Form>
       </div>

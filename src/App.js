@@ -30,7 +30,7 @@ const App = () => {
   return (
       <Router>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-          <a href="/"><img src="img/logo.png" alt="HOAS-arvostelut-logo"
+          <a href="/"><img className="img-fluid shadow-4" src="img/logo.png" alt="HOAS-arvostelut-logo"
                            style={{maxHeight: 80}}/></a>
           <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
           <Navbar.Collapse id="responsive-navbar-nav">
@@ -45,8 +45,8 @@ const App = () => {
                 <Button variant="outline-secondary">Hae</Button>
               </Form>
               <Button variant="secondary"><Nav.Link as={Link} to="/">Etusivu</Nav.Link></Button>
-              {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/register">Rekisteröidy</Nav.Link></Button>}
               {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/login">Kirjaudu</Nav.Link></Button>}
+              {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/register">Rekisteröidy</Nav.Link></Button>}
             </Nav>
             {userBoolean && <div id="userControl">
               <p id="loggedInUser">Hei {user.username}</p>
@@ -57,20 +57,19 @@ const App = () => {
 
         <Switch>
           <Route path="/login">
-            <Login/>
+            <Login  />
           </Route>
           <Route path="/register">
-            <Register/>
+            <Register />
           </Route>
 
-          {/*Always keep "<Route path="/"> last in <Switch>*/}
+          {/*Always keep "<Route path="/">" last in <Switch>*/}
           <Route path="/">
-            <Home/>
+            <Home />
           </Route>
 
         </Switch>
       </Router>
   );
-
 };
 export default App;

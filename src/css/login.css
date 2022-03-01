@@ -1,0 +1,15 @@
+Form {
+    text-align: center;
+}
+
+.col {
+    margin: 20px;
+}
+
+.form-label {
+    margin-top: 20px;
+}
+
+.form-control {
+    padding: 30px;
+}
