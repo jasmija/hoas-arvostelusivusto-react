@@ -238,13 +238,13 @@ app.post('/api/sendform', urlencodedParser, function(req, res) {
   console.log('body: %j', req.body);
   let jsonObj = req.body;
   const sql = 'INSERT INTO reviews (id, shape, comfort, grade, free_word) VALUES ( ?, ?, ?, ?, ?)';
-  console.log('jsonObject: ' + jsonObj.name + ', ' + jsonObj.shape + ', ' +
+  console.log('jsonObject: ' + jsonObj.id + ', ' + jsonObj.shape + ', ' +
       jsonObj.comfort + ', ' + jsonObj.grade + ', ' + jsonObj.word);
 
   (async () => {
     try {
       const result = await query(sql, [
-        jsonObj.name,
+        jsonObj.id,
         jsonObj.shape,
         jsonObj.comfort,
         jsonObj.grade,

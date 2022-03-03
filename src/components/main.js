@@ -81,7 +81,7 @@ const Main = () => {
           console.log('Vastaus: ' + JSON.stringify(response.data))
           let json = JSON.stringify(response.data)
           setName(response.data)
-          setNewId(response.data)
+          //setNewId(response.data)
           if (json.length > 0) {
           } else {
             console.log("Ei löytynyt yhtäkään asuntoa");
@@ -131,6 +131,8 @@ const Main = () => {
   function showForm(id) {
     console.log("showForm function function")
     console.log("id passed " + id)
+    //setNewId(JSON.stringify(id))
+    //console.log("newId " + newId)
     //setNewRating("" + id);
     setShowModal(true)
     makeQueryForAddNewReview(id)
@@ -184,8 +186,10 @@ const Main = () => {
     }
     setValidate(true);
 
+    console.log("ratingobject newId " + newId)
+
     const ratingObject = {
-      id: 2,
+      id: "1",
       shape: newShape,
       comfort: newComfort,
       grade: newGrade,
@@ -256,6 +260,7 @@ const Main = () => {
         .get('http://localhost:8080/api/results?id='+id)
         .then(response => {
           console.log('Vastaus: ' + JSON.stringify(response.data))
+          setRatings([])
           setRatings(response.data)
           json = response.data;
           countAverage(json);
@@ -263,7 +268,7 @@ const Main = () => {
   }
 
   return (
-      <div>
+      <div id="root">
         <div style={ul}>
 
           {apartments.map(content => (
@@ -287,7 +292,7 @@ const Main = () => {
           >
             <Modal.Header closeButton onClick={reset}>
               {name.map(t => (
-                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: {t.address}</Modal.Title>
+                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: {t.address} </Modal.Title>
               ))}
             </Modal.Header>
             <Modal.Body>
@@ -350,7 +355,7 @@ const Main = () => {
             </Modal.Body>
           </Modal>
 
-          <Modal
+          <Modal id="modal"
               show={showModal2}
               onHide={handleCloseModal2}
               backdrop="static"
