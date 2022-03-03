@@ -5,7 +5,7 @@ import Login from './login';
 
 const Main = () => {
 
-  const [newId, setNewId] = useState("")
+  const [newId, setNewId] = useState(0)
   const [newShape, setNewShape] = useState("")
   const [newComfort, setNewComfort] = useState("")
   const [newGrade, setNewGrade] = useState("")
@@ -131,8 +131,8 @@ const Main = () => {
   function showForm(id) {
     console.log("showForm function function")
     console.log("id passed " + id)
-    //setNewId(JSON.stringify(id))
-    //console.log("newId " + newId)
+    setNewId(id)
+    console.log("newId " + newId)
     //setNewRating("" + id);
     setShowModal(true)
     makeQueryForAddNewReview(id)
@@ -189,7 +189,7 @@ const Main = () => {
     console.log("ratingobject newId " + newId)
 
     const ratingObject = {
-      id: "1",
+      id: newId,
       shape: newShape,
       comfort: newComfort,
       grade: newGrade,
