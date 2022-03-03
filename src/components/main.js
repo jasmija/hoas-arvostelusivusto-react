@@ -35,6 +35,8 @@ const Main = () => {
   const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
   const imagePath = ["img/kimpitie.jpg", "img/berliininkatu.jpg", "img/hakaniemenranta.jpg", "img/siltakuja.jpg", "img/vaskivuorentie.jpg",  "img/juusintie.jpg", "img/kilonkallio.jpg","img/haukilahdenkuja.jpg", "img/leppäsuonkatu.jpg", "img/majurinkulma.jpg", "img/servinkuja.jpg",  "img/akanapolku.jpg"];
 
+  const [userBoolean, setUserBoolean] = useState(false);
+
   const ul = {
     display: "flex",
     flexWrap: "wrap",
@@ -42,6 +44,13 @@ const Main = () => {
     alignItems:'center',
     padding: 10,
   }
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem('user');
+    if (loggedInUser) {
+      setUserBoolean(true);
+    }
+  }, []);
 
   //id:tä varten
   const handleRatingChange = (event) => {
@@ -280,12 +289,14 @@ const Main = () => {
           {apartments.map(content => (
               <ul className="apartments"  key={''+content.id}>
                 <figure>
-                  <figcaption style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white', display: "flex", flexWrap: "wrap"}} >
-                  <h3>{content.address}</h3>
-                  <Button style={{margin: 2}} id={content.id} onClick={() => showForm(content.id)} variant="light" className="rateButtons">Arvostele</Button>
-                  <Button style={{margin: 2}} id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso arvostelut</Button>
-                </figcaption>
-                  <img id="image" src={""+content.image} alt="kimpitie"/>
+                  <figcaption style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}}>
+                    <h3>{content.address}</h3>
+                    <div id="buttons">
+                      {userBoolean && <Button id={content.id} onClick={() => showForm(content.id)} variant="light">Arvostele</Button>}
+                      <Button id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso</Button>
+                    </div>
+                    </figcaption>
+                <img id="image" src={""+content.image} alt="kimpitie" />
                 </figure>
               </ul>
           ))}
@@ -298,13 +309,14 @@ const Main = () => {
           >
             <Modal.Header closeButton onClick={reset}>
               {name.map(t => (
-                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: {t.address} </Modal.Title>
+                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: <b>{t.address}</b> </Modal.Title>
               ))}
             </Modal.Header>
             <Modal.Body>
               <Form form id="form" noValidate validated={validated} onSubmit={addRating}>
                 <Form.Group>
                   <Form.Label>Kunto</Form.Label>
+                  <br />
                   <select value={newShape} onChange={handleShapeChange} required>
                     <option value="Erinomainen">Erinomainen</option>
                     <option value="Kiitettävä">Kiitettävä</option>
@@ -318,6 +330,7 @@ const Main = () => {
 
                 <Form.Group>
                   <Form.Label>Viihtyvyys</Form.Label>
+                  <br />
                   <select value={newComfort} onChange={handleComfortChange} required>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -331,6 +344,7 @@ const Main = () => {
 
                 <Form.Group>
                   <Form.Label>Kokonaisarvosana</Form.Label>
+                  <br />
                   <select value={newGrade} onChange={handleGradeChange} required>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -368,7 +382,7 @@ const Main = () => {
               keyboard={false}>
             <Modal.Header closeButton>
               {name.map(t => (
-                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelut kohteesta: {t.address}</Modal.Title>
+                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelut kohteesta: <b>{t.address}</b></Modal.Title>
               ))}
             </Modal.Header>
             <Modal.Body>
@@ -378,10 +392,10 @@ const Main = () => {
                     <tr key={''+c.id}>
                       <td>
                         <p>{c.address}</p>
-                        <p>{c.shape}</p>
-                        <p>{c.comfort}</p>
-                        <p>{c.grade}</p>
-                        <p>{c.free_word}</p>
+                        <p><b>Kunto: </b>{c.shape}</p>
+                        <p><b>Viihtyvyys: </b>{c.comfort}</p>
+                        <p><b>Kokonaisarvosana: </b>{c.grade}</p>
+                        <p><b>Vapaa sana: </b>{c.free_word}</p>
                       </td>
                     </tr>
                 ))}
@@ -427,6 +441,7 @@ const Main = () => {
           </Modal.Body>
         </Modal>
 
+        <div className="img-fluid shadow-4" style={{height: 80, backgroundColor: "#282c34", marginTop: 15}} />
       </div>
   );
 }
