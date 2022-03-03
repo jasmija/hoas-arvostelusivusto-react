@@ -28,6 +28,9 @@ const Main = () => {
   const [showModal2, setShowModal2] = useState(false); //modaali
   const handleCloseModal2= () => setShowModal2(false); //modaali sulku
 
+  const [showModal3, setShowModal3] = useState(false); //modaali
+  const handleCloseModal3= () => setShowModal3(false); //modaali sulku
+
   const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
   const imagePath = ["img/kimpitie.jpg", "img/berliininkatu.jpg", "img/hakaniemenranta.jpg", "img/siltakuja.jpg", "img/vaskivuorentie.jpg",  "img/juusintie.jpg", "img/kilonkallio.jpg","img/haukilahdenkuja.jpg", "img/leppäsuonkatu.jpg", "img/majurinkulma.jpg", "img/servinkuja.jpg",  "img/akanapolku.jpg"];
 
@@ -147,11 +150,13 @@ const Main = () => {
     showRatings(id)
   }
 
-  /*function showAnswers(id){
+  function showAnswers(id){
     console.log("showAnswers function")
+    console.log("chat id " + id)
     //setShowChat(true)
+    setShowModal3(true)
     openChat(id)
-  }*/
+  }
 
   //Chat kysymysten vastaukset
   function openChat(id) {
@@ -385,33 +390,41 @@ const Main = () => {
           </Modal>
         </div>
 
-        <div>
-          <h3>Keskustelupalsta</h3>
+        <div >
+          <h3 style={{justifyContent:'center',
+            alignItems:'center', display: "flex",
+            flexWrap: "wrap"}}>Keskustelupalsta</h3>
+
           {chat.map(chat => (
-              <Accordion defaultActiveKey="0">
-                <Accordion.Item eventKey="0">
-                  <Accordion.Header key={''+chat.id} >{chat.header}</Accordion.Header>
-                  <Accordion.Body>
-                    Vastaukset
-                  </Accordion.Body>
-                </Accordion.Item>
-              </Accordion>
+              <ListGroup style={{justifyContent:'center',
+                alignItems:'center'}}>
+                <ListGroup.Item onClick={() => showAnswers(chat.id)} key={''+chat.id}>{chat.header}</ListGroup.Item>
+              </ListGroup>
           ))}
         </div>
 
-        {chat.map(chat => (
-            <ToastContainer>
-              <Toast style={{margin: 10}}>
-                <Toast.Header>
-                  <img src="" className="rounded me-2" alt="" />
-                  <strong className="me-auto">{chat.username}</strong>
-                  <small>11 mins ago</small>
-                </Toast.Header>
-                <Toast.Body key={''+chat.id}>{chat.header}</Toast.Body>
-                <Button variant={'dark'} >Vastaa</Button>
-              </Toast>
-            </ToastContainer>
-        ))}
+        <Modal
+               show={showModal3}
+               onHide={handleCloseModal3}
+               backdrop="static"
+               keyboard={false}>
+          <Modal.Header closeButton>
+                <Modal.Title>Vastaukset kysymykseen: </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Table striped>
+              <tbody>
+              {content.map(answers => (
+                  <tr>
+                    <td>
+                      <p key={''+ answers.id_chat}>{answers.answer}</p>
+                    </td>
+                  </tr>
+              ))}
+              </tbody>
+            </Table>
+          </Modal.Body>
+        </Modal>
 
       </div>
   );
