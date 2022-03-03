@@ -2,6 +2,7 @@ import { Button, Form, Modal, Table, ListGroup, Accordion, Toast, ToastContainer
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import Login from './login';
+import '../css/main.css';
 
 const Main = () => {
 
@@ -279,12 +280,12 @@ const Main = () => {
           {apartments.map(content => (
               <ul className="apartments"  key={''+content.id}>
                 <figure>
-                  <img  id="image" src={""+content.image} alt="kimpitie"/>
                   <figcaption style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white', display: "flex", flexWrap: "wrap"}} >
-                    <h3>{content.address}</h3>
-                    <Button style={{margin: 2}} id={content.id} onClick={() => showForm(content.id)} variant="light" className="rateButtons">Arvostele</Button>
-                    <Button style={{margin: 2}} id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso arvostelut</Button>
-                  </figcaption>
+                  <h3>{content.address}</h3>
+                  <Button style={{margin: 2}} id={content.id} onClick={() => showForm(content.id)} variant="light" className="rateButtons">Arvostele</Button>
+                  <Button style={{margin: 2}} id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso arvostelut</Button>
+                </figcaption>
+                  <img id="image" src={""+content.image} alt="kimpitie"/>
                 </figure>
               </ul>
           ))}
