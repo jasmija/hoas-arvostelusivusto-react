@@ -7,11 +7,16 @@ import '../css/main.css';
 const Main = () => {
 
   const [newId, setNewId] = useState(0)
-  const [newShape, setNewShape] = useState("")
-  const [newComfort, setNewComfort] = useState("")
-  const [newGrade, setNewGrade] = useState("")
+  const [newShape, setNewShape] = useState("Erinomainen")
+  const [newComfort, setNewComfort] = useState("1")
+  const [newGrade, setNewGrade] = useState("1")
   const [newWord, setNewWord] = useState("")
   const [validated, setValidate] = useState("")
+
+  const [newAnswer, setNewAnswer] = useState("")
+  const [newChatId, setNewChatId] = useState(0)
+  const [validatedForm, setValidateForm] = useState("")
+  const [chatMessage, setChatMessage] = useState('');
 
   const [formMessage, setMessage] = useState(''); //arvostelu lisätty onnistuneesti teksti
   const [showMessage, setShowMessage] = useState(false); //tekstin näyttäminen/piilotus
@@ -21,16 +26,25 @@ const Main = () => {
 
   const [chat, setChat] = useState([0]); //chatin sisältö
   const [content, setChatContent] = useState([0]); //chatin sisältö
-  const [showChat, setShowChat] = useState(false); //chat sisällön näyttäminen/piilotus
 
   const [showModal, setShowModal] = useState(false); //modaali
-  const handleCloseModal = () => setShowModal(false); //modaali sulku
+  //modaali sulku
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setMessage(false);
+    reset()
+  }
 
   const [showModal2, setShowModal2] = useState(false); //modaali
   const handleCloseModal2= () => setShowModal2(false); //modaali sulku
 
   const [showModal3, setShowModal3] = useState(false); //modaali
-  const handleCloseModal3= () => setShowModal3(false); //modaali sulku
+  //modaali sulku
+  const handleCloseModal3= () => {
+    setShowModal3(false);
+    setChatMessage(false);
+    resetChatForm()
+  }
 
   const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
   const imagePath = ["img/kimpitie.jpg", "img/berliininkatu.jpg", "img/hakaniemenranta.jpg", "img/siltakuja.jpg", "img/vaskivuorentie.jpg",  "img/juusintie.jpg", "img/kilonkallio.jpg","img/haukilahdenkuja.jpg", "img/leppäsuonkatu.jpg", "img/majurinkulma.jpg", "img/servinkuja.jpg",  "img/akanapolku.jpg"];
@@ -52,12 +66,6 @@ const Main = () => {
     }
   }, []);
 
-  //id:tä varten
-  const handleRatingChange = (event) => {
-    console.log(event.target.value)
-    setNewId(event.target.value)
-  }
-
   const handleShapeChange = (event) => {
     console.log(event.target.value)
     setNewShape(event.target.value)
@@ -78,9 +86,19 @@ const Main = () => {
     setNewWord(event.target.value)
   }
 
+  const handleAnswerChange = (event) =>{
+    console.log(event.target.value)
+    setNewAnswer(event.target.value)
+  }
+
   const reset = () => {
     document.getElementById("form").reset();
     setValidate(false)
+  }
+
+  const resetChatForm = () => {
+    document.getElementById("formChat").reset();
+    setValidateForm(false)
   }
 
   //Klikatun asunnon nimi asetetaan modaaalin otsikoksi
@@ -94,7 +112,6 @@ const Main = () => {
           console.log('Vastaus: ' + JSON.stringify(response.data))
           let json = JSON.stringify(response.data)
           setName(response.data)
-          //setNewId(response.data)
           if (json.length > 0) {
           } else {
             console.log("Ei löytynyt yhtäkään asuntoa");
@@ -117,7 +134,6 @@ const Main = () => {
             console.log("json pituus isompi kuin 0")
             console.log(response.data)
             setApartments(response.data)
-            //setImages(imagePath)
           } else {
             console.log("Ei löytynyt yhtäkään asuntoa");
           }
@@ -128,7 +144,6 @@ const Main = () => {
         .then(response => {
           console.log('Vastaus chat: ' + JSON.stringify(response.data))
           let json;
-          json = JSON.stringify(response.data);
           json = response.data;
 
           if (json.length > 0) {
@@ -142,11 +157,10 @@ const Main = () => {
   },[])
 
   function showForm(id) {
-    console.log("showForm function function")
+    console.log("showForm function")
     console.log("id passed " + id)
     setNewId(id)
     console.log("newId " + newId)
-    //setNewRating("" + id);
     setShowModal(true)
     makeQueryForAddNewReview(id)
   }
@@ -154,7 +168,6 @@ const Main = () => {
   function showReviews(id){
     console.log("showReviews function")
     console.log("id passed " + id)
-    //makeQueryForAddNewReview(1)
     setShowModal2(true)
     makeQueryForAddNewReview(id)
     showRatings(id)
@@ -163,10 +176,11 @@ const Main = () => {
   function showAnswers(id){
     console.log("showAnswers function")
     console.log("chat id " + id)
-    //setShowChat(true)
     setShowModal3(true)
     openChat(id)
+    setNewChatId(id)
   }
+
 
   //Chat kysymysten vastaukset
   function openChat(id) {
@@ -176,8 +190,6 @@ const Main = () => {
         .then(response => {
           console.log('Vastaus chat content: ' + JSON.stringify(response.data))
           let json = JSON.stringify(response.data)
-          //const ReactElement = React.createElement('p', null, response.data)
-          //setShowChat(true)
           if (json.length > 0) {
             setChatContent(response.data)
           } else {
@@ -279,6 +291,42 @@ const Main = () => {
           setRatings(response.data)
           json = response.data;
           countAverage(json);
+        })
+  }
+
+  const addAnswer = event => {
+
+    console.log("SEND CHAT ANSWER")
+    event.preventDefault()
+
+    const form = event.currentTarget;
+    if(form.checkValidity() === false){
+      event.stopPropagation();
+    }
+    setValidateForm(true);
+    if(form.checkValidity() === false){
+      return
+    }
+    setValidateForm(true);
+
+    const answerObject = {
+      id_chat: newChatId,
+      answer: newAnswer,
+    }
+    console.log('answerObject: ' + answerObject.id_chat + ", " + answerObject.answer)
+
+    axios
+        .post('http://localhost:8080/api/addchatanswer', answerObject)
+        .then(response => {
+          console.log('answerObject: ' + JSON.stringify(answerObject))
+          console.log(response)
+
+          if(response.status === 200)
+            setChatMessage('Uuden chatin lisääminen onnistui!')
+          else if(response.status === 401)
+            setChatMessage('Uuden chatin lisääminen epäonnistui, täytä puuttuvat kentät!')
+
+          resetChatForm()
         })
   }
 
@@ -424,7 +472,7 @@ const Main = () => {
                backdrop="static"
                keyboard={false}>
           <Modal.Header closeButton>
-                <Modal.Title>Vastaukset kysymykseen: </Modal.Title>
+                <Modal.Title>Vastaukset:</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Table striped>
@@ -436,11 +484,29 @@ const Main = () => {
                     </td>
                   </tr>
               ))}
+              <br/>
               </tbody>
             </Table>
+
+            <Form form id="formChat" noValidate validated={validatedForm} onSubmit={addAnswer}>
+              <Form.Group>
+                <Form.Label>Kirjoita vastaus:</Form.Label>
+                <Form.Control
+                    onChange={handleAnswerChange}
+                    required
+                    type="text"
+                    placeholder=""
+                />
+                <Form.Control.Feedback type="invalid">Täytä kenttä!</Form.Control.Feedback>
+              </Form.Group>
+              <p>{chatMessage}</p>
+              <br/>
+              <Button type="submit">Lähetä vastaus</Button>
+              <br/>
+            </Form>
+
           </Modal.Body>
         </Modal>
-
         <div className="img-fluid shadow-4" style={{height: 80, backgroundColor: "#282c34", marginTop: 15}} />
       </div>
   );
