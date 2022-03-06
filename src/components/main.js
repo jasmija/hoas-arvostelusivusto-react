@@ -363,7 +363,7 @@ const Main = () => {
             <Modal.Body>
               <Form form id="form" noValidate validated={validated} onSubmit={addRating}>
                 <Form.Group>
-                  <Form.Label>Kunto</Form.Label>
+                  <Form.Label style={{fontSize:"20px"}}>Kunto</Form.Label>
                   <br />
                   <select value={newShape} onChange={handleShapeChange} required>
                     <option value="Erinomainen">Erinomainen</option>
@@ -377,7 +377,7 @@ const Main = () => {
                 <br/>
 
                 <Form.Group>
-                  <Form.Label>Viihtyvyys</Form.Label>
+                  <Form.Label style={{fontSize:"20px"}}>Viihtyvyys</Form.Label>
                   <br />
                   <select value={newComfort} onChange={handleComfortChange} required>
                     <option value="1">1</option>
@@ -391,7 +391,7 @@ const Main = () => {
                 <br/>
 
                 <Form.Group>
-                  <Form.Label>Kokonaisarvosana</Form.Label>
+                  <Form.Label style={{fontSize:"20px"}}>Kokonaisarvosana</Form.Label>
                   <br />
                   <select value={newGrade} onChange={handleGradeChange} required>
                     <option value="1">1</option>
@@ -405,7 +405,7 @@ const Main = () => {
                 <br/>
 
                 <Form.Group>
-                  <Form.Label>Vapaa sana</Form.Label>
+                  <Form.Label style={{fontSize:"20px"}}>Vapaa sana</Form.Label>
                   <Form.Control
                       onChange={handleWordChange}
                       required
@@ -439,10 +439,13 @@ const Main = () => {
                 {ratings.map(c => (
                     <tr key={''+c.id}>
                       <td>
-                        <p>{c.address}</p>
-                        <p><b>Kunto: </b>{c.shape}</p>
-                        <p><b>Viihtyvyys: </b>{c.comfort}</p>
-                        <p><b>Kokonaisarvosana: </b>{c.grade}</p>
+                        <p style={{fontSize:"22px"}}>Arvostelu lisätty: {c.date}</p>
+                        <p style={{display: 'inline-block', marginRight: 5}}><b>Kokonaisarvosana: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{c.grade}</p>
+                        <br />
+                        <p style={{display: 'inline-block', marginRight: 5}}><b>Kunto: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{c.shape}</p>
+                        <br />
+                        <p style={{display: 'inline-block', marginRight: 5}}><b>Viihtyvyys: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{c.comfort}</p>
+                        <br />
                         <p><b>Vapaa sana: </b>{c.free_word}</p>
                       </td>
                     </tr>

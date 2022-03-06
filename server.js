@@ -54,7 +54,7 @@ app.get('/api/results', function(req, res) {
   const id = q.id;
   let string;
 
-  const sql = 'SELECT apartments.address, reviews.id, reviews.shape, reviews.comfort, reviews.grade, reviews.free_word'
+  const sql = 'SELECT apartments.address, reviews.id, reviews.shape, reviews.comfort, reviews.grade, reviews.free_word, reviews.date, DATE_FORMAT(reviews.date, "%d.%m.%Y") AS date'
       + ' FROM apartments, reviews'
       + ' WHERE reviews.id = apartments.id'
       + ' and apartments.id= ?';
