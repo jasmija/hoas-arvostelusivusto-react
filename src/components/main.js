@@ -341,7 +341,7 @@ const Main = () => {
                     <h3>{content.address}</h3>
                     <div id="buttons">
                       {userBoolean && <Button id={content.id} onClick={() => showForm(content.id)} variant="light">Arvostele</Button>}
-                      <Button id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso</Button>
+                      <Button style={{marginLeft: 5}} id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso</Button>
                     </div>
                     </figcaption>
                 <img id="image" src={""+content.image} alt="kimpitie" />
