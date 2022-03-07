@@ -15,7 +15,7 @@ const Main = ({searchboxStringToChild}) => {
       return value.address.toLowerCase().includes(searchWord.toLowerCase());
     });
 
-    if (searchWord === "") {
+    if (!searchWord) {
       setFilteredData(apartments);
     } else {
       setFilteredData(newFilter);
@@ -23,7 +23,14 @@ const Main = ({searchboxStringToChild}) => {
   };
 
   useEffect(() => {
-    handleFilter(searchboxStringToChild)
+    let abortController = new AbortController();
+    async function asd() {
+      await handleFilter(searchboxStringToChild)
+    }
+    asd().then(() => {
+    return () => {
+      abortController.abort()
+    }})
   }, [searchboxStringToChild]);
 
   const [newId, setNewId] = useState(0)
