@@ -142,7 +142,7 @@ app.get('/api/chatheader', function(req, res) {
   const id = q.id;
   let string;
 
-  const sql = 'SELECT header'
+  const sql = 'SELECT header, username'
       + ' FROM chat'
       + ' WHERE id=?';
 

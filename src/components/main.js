@@ -50,6 +50,9 @@ const Main = () => {
 
   const [userBoolean, setUserBoolean] = useState(false);
 
+  const [newUsername, setNewUsername] = useState(0)
+  const [newHeader, setNewChatHeader] = useState(0)
+
   const ul = {
     display: "flex",
     flexWrap: "wrap",
@@ -60,6 +63,11 @@ const Main = () => {
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
+
+    //Käyttäjänimi chattiin
+    let user = JSON.parse(loggedInUser);
+    setNewUsername(user.username)
+
     if (loggedInUser) {
       setUserBoolean(true);
     }
@@ -350,6 +358,47 @@ const Main = () => {
   };
 
 
+  const addChatQuestion = event => {
+
+    console.log("SEND CHAT QUESTION")
+    event.preventDefault()
+
+    const form = event.currentTarget;
+    if(form.checkValidity() === false){
+      event.stopPropagation();
+    }
+    //setValidateForm(true);
+    if(form.checkValidity() === false){
+      return
+    }
+    setValidateForm(true);
+
+    const questionObject = {
+      username: newUsername,
+      header: newHeader,
+    }
+    console.log('questionObject: ' + questionObject.username + ", " + questionObject.header)
+
+    axios
+        .post('http://localhost:8080/api/addchat', questionObject)
+        .then(response => {
+          console.log('questionObject: ' + JSON.stringify(questionObject))
+          console.log(response)
+
+          if(response.status === 200)
+            setChatMessage('Uuden kysymyksen lisääminen onnistui!')
+          else if(response.status === 401)
+            setChatMessage('Uuden kysymyksen lisääminen epäonnistui, täytä puuttuvat kentät!')
+
+          //resetChatForm()
+        })
+  }
+
+  const handleQuestionChange = (event) =>{
+    console.log(event.target.value)
+    setNewChatHeader(event.target.value)
+  }
+
   return (
       <div id="root">
         <div id="filter">
@@ -487,7 +536,7 @@ const Main = () => {
           </Modal>
         </div>
 
-        <div >
+        <div>
           <h3 style={{justifyContent:'center',
             alignItems:'center', display: "flex",
             flexWrap: "wrap"}}>Keskustelupalsta</h3>
@@ -495,10 +544,28 @@ const Main = () => {
           {chat.map(chat => (
               <ListGroup style={{justifyContent:'center',
                 alignItems:'center'}}>
-                <ListGroup.Item onClick={() => showAnswers(chat.id)} key={''+chat.id}>{chat.header}</ListGroup.Item>
+                <ListGroup.Item onClick={() => showAnswers(chat.id)} key={''+chat.id}>{chat.header} {chat.username}</ListGroup.Item>
               </ListGroup>
           ))}
         </div>
+
+        <Form style={{justifyContent:'center',
+          alignItems:'center'}} form id="formChat" noValidate onSubmit={addChatQuestion}>
+          <Form.Group >
+            <Form.Label>Kirjoita uusi kysymys:</Form.Label>
+            <Form.Control
+                onChange={handleQuestionChange}
+                required
+                type="text"
+                placeholder=""
+            />
+            <Form.Control.Feedback type="invalid">Täytä kenttä!</Form.Control.Feedback>
+          </Form.Group>
+          <p></p>
+          <br/>
+          <Button type="submit">Lähetä kysymys</Button>
+          <br/>
+        </Form>
 
         <Modal
                show={showModal3}
