@@ -1,10 +1,30 @@
 import { Button, Form, Modal, Table, ListGroup, Accordion, Toast, ToastContainer} from "react-bootstrap";
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import Login from './login';
 import '../css/main.css';
 
-const Main = () => {
+const Main = ({searchboxStringToChild}) => {
+
+  const [wordEntered, setWordEntered] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleFilter = (searchboxStringToChild) => {
+    const searchWord = searchboxStringToChild;
+    setWordEntered(searchWord);
+    const newFilter = apartments.filter((value) => {
+      return value.address.toLowerCase().includes(searchWord.toLowerCase());
+    });
+
+    if (searchWord === "") {
+      setFilteredData(apartments);
+    } else {
+      setFilteredData(newFilter);
+    }
+  };
+
+  useEffect(() => {
+    handleFilter(searchboxStringToChild)
+  }, [searchboxStringToChild]);
 
   const [newId, setNewId] = useState(0)
   const [newShape, setNewShape] = useState("Erinomainen")
@@ -28,6 +48,7 @@ const Main = () => {
   const [content, setChatContent] = useState([0]); //chatin sisältö
 
   const [showModal, setShowModal] = useState(false); //modaali
+
   //modaali sulku
   const handleCloseModal = () => {
     setShowModal(false);
@@ -334,7 +355,7 @@ const Main = () => {
       <div id="root">
         <div style={ul}>
 
-          {apartments.map(content => (
+          {filteredData.map(content => (
               <ul className="apartments"  key={''+content.id}>
                 <figure>
                   <figcaption style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}}>

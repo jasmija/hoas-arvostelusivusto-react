@@ -4,13 +4,14 @@ import Register from './components/register';
 import Home from './components/main';
 import 'bootstrap/dist/css/bootstrap.css';
 import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
-import {Navbar, Nav, Form, FormControl, Button} from 'react-bootstrap';
+import {Navbar, Nav, Button} from 'react-bootstrap';
 import {useEffect, useState} from 'react';
 
 const App = () => {
 
   const [user, setUser] = useState();
   const [userBoolean, setUserBoolean] = useState(false);
+  const [searchboxString, setSearchboxString] = useState('');
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
@@ -27,6 +28,11 @@ const App = () => {
     window.location.href = '/';
   };
 
+  const searchboxStringToChild = () => {
+    let searchboxContents = document.getElementById('search').value;
+    setSearchboxString(searchboxContents);
+  }
+
   return (
       <Router>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -35,15 +41,15 @@ const App = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="nav navbar-nav ms-auto">
-              <Form className="d-flex">
-                <FormControl
-                    type="search"
-                    placeholder="Hae kohdetta..."
-                    className="me-2"
-                    aria-label="Search"
-                />
-                <Button variant="outline-secondary">Hae</Button>
-              </Form>
+              <input type="search"
+                     className="d-flex"
+                     id="search"
+                     placeholder="Hae kohdetta..."
+                     autoComplete="off"
+                     autoFocus
+                     style={{padding: 8}}
+                     onKeyUp={() => searchboxStringToChild()}
+              />
               <Button variant="secondary"><Nav.Link as={Link} to="/">Etusivu</Nav.Link></Button>
               {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/login">Kirjaudu</Nav.Link></Button>}
               {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/register">Rekisteröidy</Nav.Link></Button>}
@@ -65,7 +71,7 @@ const App = () => {
 
           {/*Always keep "<Route path="/">" last in <Switch>*/}
           <Route path="/">
-            <Home />
+            <Home searchboxStringToChild={searchboxString}/>
           </Route>
 
         </Switch>
