@@ -1,7 +1,6 @@
-import { Button, Form, Modal, Table, ListGroup, Accordion, Toast, ToastContainer} from "react-bootstrap";
-import React, { useEffect, useState } from 'react';
-import axios from "axios";
-import Login from './login';
+import {Button, Form, ListGroup, Modal, Table} from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
 import '../css/main.css';
 
 const Main = () => {
@@ -120,7 +119,7 @@ const Main = () => {
   }
 
   //Asuntojen osoitteet otsikoksi kun sivu ladataan
-  useEffect(() =>{
+  useEffect(() => {
     axios
         .get('http://localhost:8080/api/apartments')
         .then(response => {
@@ -134,6 +133,7 @@ const Main = () => {
             console.log("json pituus isompi kuin 0")
             console.log(response.data)
             setApartments(response.data)
+            setFilteredData(response.data)
           } else {
             console.log("Ei löytynyt yhtäkään asuntoa");
           }
@@ -330,11 +330,42 @@ const Main = () => {
         })
   }
 
+  const [wordEntered, setWordEntered] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
+
+
+  const handleFilter = () => {
+    const searchWord = document.getElementById("search").value;
+    setWordEntered(searchWord);
+    const newFilter = apartments.filter((value) => {
+      return value.address.toLowerCase().includes(searchWord.toLowerCase());
+    });
+
+    if (searchWord === '') {
+      setFilteredData(apartments);
+    } else {
+      setFilteredData(newFilter);
+    }
+  };
+
+
   return (
       <div id="root">
+        <div id="filter">
+          <h3>Haku</h3>
+        <input type="search"
+               className="d-flex"
+               id="search"
+               placeholder="Hae kohdetta..."
+               autoComplete="off"
+               autoFocus
+               style={{padding: 8}}
+               onChange={handleFilter}
+        />
+        </div>
         <div style={ul}>
-
-          {apartments.map(content => (
+          {filteredData.map(content => (
               <ul className="apartments"  key={''+content.id}>
                 <figure>
                   <figcaption style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}}>

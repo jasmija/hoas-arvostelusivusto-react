@@ -35,15 +35,6 @@ const App = () => {
           <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="nav navbar-nav ms-auto">
-              <Form className="d-flex">
-                <FormControl
-                    type="search"
-                    placeholder="Hae kohdetta..."
-                    className="me-2"
-                    aria-label="Search"
-                />
-                <Button variant="outline-secondary">Hae</Button>
-              </Form>
               <Button variant="secondary"><Nav.Link as={Link} to="/">Etusivu</Nav.Link></Button>
               {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/login">Kirjaudu</Nav.Link></Button>}
               {!userBoolean && <Button variant="secondary"><Nav.Link as={Link} to="/register">Rekisteröidy</Nav.Link></Button>}
