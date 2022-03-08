@@ -565,37 +565,43 @@ const Main = () => {
           </Modal>
         </div>
 
-        <div>
+        <div style={{justifyContent:'center',
+          alignItems:'center'}}>
           <h3 style={{justifyContent:'center',
             alignItems:'center', display: "flex",
-            flexWrap: "wrap"}}>Keskustelupalsta</h3>
-
+            flexWrap: "wrap", fontWeight: 'bold'}}>Keskustelupalsta</h3>
+          <br/>
           {chat.map(chat => (
               <ListGroup style={{justifyContent:'center',
                 alignItems:'center'}}>
-                <ListGroup.Item onClick={() => showAnswers(chat.id)} key={''+chat.id}>{chat.header} {chat.username}</ListGroup.Item>
+                <ListGroup.Item action variant="dark" style={{maxWidth: 600, justifyContent:'center',
+                  alignItems:'center', display: "flex",
+                  flexWrap: "wrap"}} onClick={() => showAnswers(chat.id)} key={''+chat.id}> <p style={{fontWeight: 'bold', marginRight: 5}}>{chat.header}</p> <p>{chat.username}</p></ListGroup.Item>
+                <br/>
               </ListGroup>
           ))}
-        </div>
 
-        <Form style={{justifyContent:'center',
-          alignItems:'center'}} form id="formChatQuestion" noValidate validated={validatedQuestionForm} onSubmit={addChatQuestion}>
-          <Form.Group >
-            <Form.Label>Kirjoita uusi kysymys:</Form.Label>
-            <Form.Control
-                onChange={handleQuestionChange}
-                required
-                type="text"
-                placeholder=""
-            />
-            <Form.Control.Feedback type="invalid">Täytä kenttä!</Form.Control.Feedback>
-            <p> {showChatQuestionMessage}</p>
-          </Form.Group>
-          <p></p>
-          <br/>
-          <Button type="submit">Lähetä kysymys</Button>
-          <br/>
-        </Form>
+
+          <Form  form id="formChatQuestion" noValidate validated={validatedQuestionForm} onSubmit={addChatQuestion}>
+            <Form.Group>
+              <Form.Label style={{fontWeight: 'bold'}}>Kirjoita uusi kysymys:</Form.Label>
+              <Form.Control style={{display: 'block', margin: 'auto', justifyContent:'center',
+                alignItems:'center', maxWidth: 600}}
+                  onChange={handleQuestionChange}
+                  required
+                  type="text"
+                  placeholder=""
+              />
+              <Form.Control.Feedback type="invalid">Täytä kenttä!</Form.Control.Feedback>
+              <p> {showChatQuestionMessage}</p>
+            </Form.Group>
+            <p></p>
+            <br/>
+            <Button variant="secondary" type="submit">Lähetä kysymys</Button>
+            <br/>
+          </Form>
+
+        </div>
 
         <Modal
                show={showModal3}
@@ -625,7 +631,7 @@ const Main = () => {
 
             <Form form id="formChat" noValidate validated={validatedForm} onSubmit={addAnswer}>
               <Form.Group>
-                <Form.Label>Kirjoita vastaus:</Form.Label>
+                <Form.Label  style={{fontWeight: 'bold'}}>Kirjoita vastaus:</Form.Label>
                 <Form.Control
                     onChange={handleAnswerChange}
                     required
@@ -636,7 +642,7 @@ const Main = () => {
               </Form.Group>
               <p>{chatMessage}</p>
               <br/>
-              <Button type="submit">Lähetä vastaus</Button>
+              <Button variant="secondary" type="submit">Lähetä vastaus</Button>
               <br/>
             </Form>
 
