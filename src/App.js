@@ -4,7 +4,7 @@ import Register from './components/register';
 import Home from './components/main';
 import 'bootstrap/dist/css/bootstrap.css';
 import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
-import {Navbar, Nav, Form, FormControl, Button} from 'react-bootstrap';
+import {Navbar, Nav, Button} from 'react-bootstrap';
 import {useEffect, useState} from 'react';
 
 const App = () => {
@@ -12,8 +12,11 @@ const App = () => {
   const [user, setUser] = useState();
   const [userBoolean, setUserBoolean] = useState(false);
 
+  // Check user's localstorage for token.
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
+    // If token is found, set "setUserBoolean" to true which is used to show parts of page only to logged in users.
+    // Also get username from token and show it in navbar.
     if (loggedInUser) {
       setUserBoolean(true);
       const foundUser = JSON.parse(loggedInUser);
@@ -21,6 +24,7 @@ const App = () => {
     }
   }, []);
 
+  // Clear localstorage when log out is clicked.
   const handleLogout = () => {
     setUserBoolean(false);
     localStorage.clear();
@@ -63,4 +67,5 @@ const App = () => {
       </Router>
   );
 };
+
 export default App;
