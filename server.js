@@ -260,7 +260,7 @@ app.post('/api/sendform', urlencodedParser, function(req, res) {
 });
 
 /**
- * Add new user to database and hash password
+ * Register new user to database and hash password
  */
 app.post('/api/adduser', urlencodedParser, function(req, res) {
   const username = req.body.username;

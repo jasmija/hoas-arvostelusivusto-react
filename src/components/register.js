@@ -16,7 +16,7 @@ const Register = () => {
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
 
-  let loginObject = {
+  let registerObject = {
     username: usernameValue,
     password: pwdValue,
   }
@@ -31,9 +31,8 @@ const Register = () => {
       event.stopPropagation();
       setValidated(true);
       return;
-    } else {
-      event.preventDefault();
     }
+    event.preventDefault();
     // If both fields have data, reset form and move focus on username field.
     formReset.current.reset();
     setValidated(false);
@@ -41,7 +40,7 @@ const Register = () => {
 
     // Send form data to server.
     await axios
-        .post('http://localhost:8080/api/adduser', loginObject)
+        .post('http://localhost:8080/api/adduser', registerObject)
         .then(async response => {
           // If user already exists in database, receive status 202 from server and show error.
           if (response.status === 202) {
@@ -67,12 +66,13 @@ const Register = () => {
             <Form.Control ref={usernameFocus}
                           autoFocus
                           required
+                          pattern="[\S]{3,}"
                           type="text"
                           onChange={event => setUsernameValue(event.target.value)}
                           placeholder="Käyttäjänimi"
             />
             <Form.Control.Feedback type="invalid">
-              Käyttäjänimi vaaditaan.
+              Käyttäjänimen täytyy olla vähintään 3 merkkiä pitkä (välilyöntejä ei hyväksytä).
             </Form.Control.Feedback>
             <Form.Control.Feedback/>
           </Form.Group>
@@ -81,14 +81,15 @@ const Register = () => {
             <Form.Control
                 type="password"
                 required
+                pattern="[\S]{8,}"
                 onChange={event => setPwdValue(event.target.value)}
                 placeholder="Salasana"
             />
             <Form.Control.Feedback type="invalid">
-              Salasana vaaditaan.
+              Salasanan täytyy olla vähintään 8 merkkiä pitkä (välilyöntejä ei hyväksytä).
             </Form.Control.Feedback>
             <Form.Control.Feedback/>
-            {success && <div className="alert alert-success" role="alert" style={marginTop}>Rekisteröityminen onnistui!<br /> Uudelleenohjataan...</div>}
+            {success && <div className="alert alert-success" role="alert" style={marginTop}>Rekisteröityminen onnistui!<br /><br /> Uudelleenohjataan...</div>}
             {failure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjä on jo olemassa.</div>}
           </Form.Group>
         </Col>
