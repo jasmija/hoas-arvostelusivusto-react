@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import { Form, Button, Col } from 'react-bootstrap';
 import axios from 'axios';
 import '../css/login.css';
@@ -13,18 +13,21 @@ const Login = () => {
   const [validated, setValidated] = useState(false);
   const formReset = useRef(null);
   const usernameFocus = React.useRef();
-  const [failure, setFailure] = useState(false);
-  const [failure2, setFailure2] = useState(false);
-  const [success, setSuccess] = useState(false);
-  let [, setResponseValue] = useState(0);
+  const [usrNotFoundFailure, setUsrNotFoundFailure] = useState(false);
+  const [usrOrPwdWrongFailure, setUsrOrPwdWrongFailure] = useState(false);
+  const [usrFound, setUsrFound] = useState(false);
 
+  // Username and password from user form.
   let loginObject = {
     username: usernameValue,
     password: pwdValue,
   };
 
+  // Trigger addInfo() when form is submitted.
   const addInfo = async (event) => {
     const form = event.currentTarget;
+    // Check if both username and password fields are not empty.
+    // If either is empty, enter if-statement and show client side error.
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
@@ -33,24 +36,31 @@ const Login = () => {
     } else {
       event.preventDefault();
     }
+    // If both fields have data, reset form and move focus on usernamefield.
     formReset.current.reset();
     setValidated(false);
     usernameFocus.current.focus();
 
+    // Send form data to server.
     await axios
         .post('http://localhost:8080/login', loginObject)
-        .then(response => {
-          setResponseValue(response.status);
+        .then(async response => {
+          // If username is not found in database, enter if-statements depending on response status.
           if (response.status === 202) {
-            setFailure2(false);
-            setFailure(true);
+            setUsrNotFoundFailure(true);
+            setUsrOrPwdWrongFailure(false);
           }
           if (response.status === 203) {
-            setFailure(false);
-            setFailure2(true);
+            setUsrNotFoundFailure(false);
+            setUsrOrPwdWrongFailure(true);
+            // If user is found, add response data to localstorage.
           } else if (response.status === 201) {
             localStorage.setItem('user', JSON.stringify(response.data));
-            setSuccess(true);
+            setUsrNotFoundFailure(false);
+            setUsrOrPwdWrongFailure(false);
+            setUsrFound(true);
+            // Wait 2 seconds before redirect to home page.
+            await new Promise(r => setTimeout(r, 2000));
             window.location.href = "/";
           }
         });
@@ -87,9 +97,9 @@ const Login = () => {
               Salasana vaaditaan.
             </Form.Control.Feedback>
             <Form.Control.Feedback/>
-            {failure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjää ei löydy.</div>}
-            {failure2 && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjätunnus tai salasana väärin.</div>}
-            {success && <div className="alert alert-success" role="alert" style={marginTop}>Kirjautuminen onnistui.</div>}
+            {usrNotFoundFailure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjänimeä ei löydy.</div>}
+            {usrOrPwdWrongFailure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjänimi tai salasana väärin.</div>}
+            {usrFound && <div className="alert alert-success" role="alert" style={marginTop}>Kirjautuminen onnistui!<br />Uudelleenohjataan...</div>}
           </Form.Group>
         </Col>
         <Button type="submit" variant="success">Kirjaudu</Button>
