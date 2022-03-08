@@ -33,7 +33,7 @@ const Register = () => {
       return;
     }
     event.preventDefault();
-    // If both fields have data, reset form and move focus on username field.
+    // If both fields have data, reset form and move focus to username field.
     formReset.current.reset();
     setValidated(false);
     usernameFocus.current.focus();

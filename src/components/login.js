@@ -36,7 +36,7 @@ const Login = () => {
     } else {
       event.preventDefault();
     }
-    // If both fields have data, reset form and move focus on usernamefield.
+    // If both fields have data, reset form and move focus to username field.
     formReset.current.reset();
     setValidated(false);
     usernameFocus.current.focus();
@@ -64,7 +64,6 @@ const Login = () => {
             window.location.href = "/";
           }
         });
-
   };
 
   return (
@@ -76,12 +75,13 @@ const Login = () => {
             <Form.Control ref={usernameFocus}
                           autoFocus
                           required
+                          pattern="[\S]{1,}"
                           type="text"
                           onChange={event => setUsernameValue(event.target.value)}
                           placeholder="Käyttäjänimi"
             />
             <Form.Control.Feedback type="invalid">
-              Käyttäjänimi vaaditaan.
+              Käyttäjänimi vaaditaan (välilyöntejä ei hyväksytä).
             </Form.Control.Feedback>
             <Form.Control.Feedback/>
           </Form.Group>
@@ -90,16 +90,17 @@ const Login = () => {
             <Form.Control
                 type="password"
                 required
+                pattern="[\S]{1,}"
                 onChange={event => setPwdValue(event.target.value)}
                 placeholder="Salasana"
             />
             <Form.Control.Feedback type="invalid">
-              Salasana vaaditaan.
+              Salasana vaaditaan (välilyöntejä ei hyväksytä).
             </Form.Control.Feedback>
             <Form.Control.Feedback/>
             {usrNotFoundFailure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjänimeä ei löydy.</div>}
             {usrOrPwdWrongFailure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjänimi tai salasana väärin.</div>}
-            {usrFound && <div className="alert alert-success" role="alert" style={marginTop}>Kirjautuminen onnistui!<br />Uudelleenohjataan...</div>}
+            {usrFound && <div className="alert alert-success" role="alert" style={marginTop}>Kirjautuminen onnistui!<br /><br />Uudelleenohjataan...</div>}
           </Form.Group>
         </Col>
         <Button type="submit" variant="success">Kirjaudu</Button>
