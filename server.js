@@ -37,6 +37,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+//Create application/x-www-form-urlencoded parser
+const urlencodedParser = bodyParser.urlencoded({extended: true});
+app.use(bodyParser.urlencoded({extended: false}));
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header(
@@ -97,7 +101,6 @@ app.get('/api/address', function(req, res) {
  * Get apartment id and name from database
  */
 app.get('/api/apartments', function(req, res) {
-  const q = url.parse(req.url, true).query;
   let string;
 
   const sql = 'SELECT id, address, image FROM apartments';
@@ -108,7 +111,7 @@ app.get('/api/apartments', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error in !' + err);
+      console.log('Database error in /api/apartments! ' + err);
     }
   })();
 });
@@ -117,7 +120,6 @@ app.get('/api/apartments', function(req, res) {
  * Get chat topic id, username and header from database
  */
 app.get('/api/chat', function(req, res) {
-  const q = url.parse(req.url, true).query;
   let string;
 
   const sql = 'SELECT id, username, header, date, DATE_FORMAT(date, "%d.%m.%Y") AS date'
@@ -129,7 +131,7 @@ app.get('/api/chat', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error!' + err);
+      console.log('Database error in /api/chat! ' + err);
     }
   })();
 });
@@ -144,7 +146,7 @@ app.get('/api/chatheader', function(req, res) {
 
   const sql = 'SELECT header'
       + ' FROM chat'
-      + ' WHERE id=?';
+      + ' WHERE id = ?';
 
   (async () => {
     try {
@@ -152,7 +154,7 @@ app.get('/api/chatheader', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error!' + err);
+      console.log('Database error in /api/chatheader! ' + err);
     }
   })();
 });
@@ -167,7 +169,7 @@ app.get('/api/chatcontent', function(req, res) {
 
   const sql = 'SELECT answer, username, date, DATE_FORMAT(date, "%d.%m.%Y") AS date'
       + ' FROM chat_answers'
-      + ' WHERE id_chat=?';
+      + ' WHERE id_chat = ?';
 
   (async () => {
     try {
@@ -175,15 +177,10 @@ app.get('/api/chatcontent', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error!' + err);
+      console.log('Database error in /api/chatcontent! ' + err);
     }
   })();
 });
-
-//Create application/x-www-form-urlencoded parser
-const urlencodedParser = bodyParser.urlencoded({extended: true});
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
 
 /**
  * Insert new chat to database
@@ -192,18 +189,14 @@ app.post('/api/addchat', urlencodedParser, function(req, res) {
 
   let json = req.body;
 
-  let chatti = JSON.stringify(json);
-  res.send('POST succesful: ' + chatti);
-
   const sql = 'INSERT INTO chat (username, header) VALUES ( ?, ?)';
 
   (async () => {
     try {
-      const result = await query(sql, [json.username, json.header]);
-      let insertedId = result.insertId;
-      res.send('POST succesful: ' + req.body);
+      await query(sql, [json.username, json.header]);
+      res.send('POST succesful: ' + JSON.stringify(req.body));
     } catch (err) {
-      console.log('Insertion into tables was unsuccessful!' + err);
+      console.log('Could not insert into table(s) at /api/addchat! ' + err);
     }
   })();
 });
@@ -215,18 +208,14 @@ app.post('/api/addchatanswer', urlencodedParser, function(req, res) {
 
   let json = req.body;
 
-  let chattianswer = JSON.stringify(json);
-  res.send('POST succesful chat: ' + chattianswer);
-  console.log('' + chattianswer)
-
   const sql = 'INSERT INTO chat_answers (id_chat, answer, username) VALUES ( ?, ?, ?)';
 
   (async () => {
     try {
-      const result = await query(sql, [json.id_chat, json.answer, json.username]);
-      let insertedId = result.insertId;
+      await query(sql, [json.id_chat, json.answer, json.username]);
+      res.send('POST succesful: ' + JSON.stringify(req.body));
     } catch (err) {
-      console.log('Insertion into tables was unsuccessful!' + err);
+      console.log('Could not insert into table(s) at /api/addchatanswer! ' + err);
     }
   })();
 });
@@ -236,25 +225,21 @@ app.post('/api/addchatanswer', urlencodedParser, function(req, res) {
  */
 app.post('/api/sendform', urlencodedParser, function(req, res) {
 
-  console.log('body: %j', req.body);
   let jsonObj = req.body;
+
   const sql = 'INSERT INTO reviews (id, shape, comfort, grade, free_word) VALUES ( ?, ?, ?, ?, ?)';
-  console.log('jsonObject: ' + jsonObj.id + ', ' + jsonObj.name + ', ' + jsonObj.shape + ', ' +
-      jsonObj.comfort + ', ' + jsonObj.grade + ', ' + jsonObj.word);
 
   (async () => {
     try {
-      const result = await query(sql, [
+      await query(sql, [
         jsonObj.id,
         jsonObj.shape,
         jsonObj.comfort,
         jsonObj.grade,
         jsonObj.word]);
-      let insertedId = result.insertId;
-      //res.send('POST succesful: ' + req.body);
-      res.status(200).send('POST succesful ' + req.body);
+      res.status(200).send('POST successful ' + req.body);
     } catch (err) {
-      console.log('Insertion into tables was unsuccessful! ' + err);
+      console.log('Could not insert into table(s) at /api/sendform! ' + err);
     }
   })();
 });
@@ -275,7 +260,6 @@ app.post('/api/adduser', urlencodedParser, function(req, res) {
       let result = await query(sql, [username]);
       if (result.length === 0) {
         pwd = hashedPassword;
-        console.log('Hashed password: ' + pwd);
 
         sql = 'INSERT INTO accounts (username, password) VALUES (?, ?)';
 
@@ -287,8 +271,8 @@ app.post('/api/adduser', urlencodedParser, function(req, res) {
         res.status(202).send();
         console.log('User already registered (user: "' + username + '" ).');
       }
-    } catch (error) {
-      console.log('ERROR! ' + error);
+    } catch (err) {
+      console.log('Could not insert into table(s) at /api/adduser! ' + err);
     }
   })();
 });
@@ -302,24 +286,18 @@ app.post('/login', urlencodedParser, function(req, res) {
 
   (async () => {
     try {
-      const hashedPassword = await bcrypt.hash(pwd, 10);
-
+      await bcrypt.hash(pwd, 10);
       let sql = 'SELECT * FROM accounts WHERE username = ?';
 
       let result = await query(sql, [username]);
       if (result.length === 0) {
         res.status(202).send('User not found.');
-        console.log('\nUser not found!');
-      }
-      if (!result || !(await bcrypt.compare(pwd, result[0].password))) {
+      } if (!result || !(await bcrypt.compare(pwd, result[0].password))) {
         res.status(203).send('User or password wrong.');
-        console.log('\nUser or password wrong.');
       } else {
         let foundHashed = (result[0].password).toString();
         const match = await bcrypt.compare(pwd, result[0].password);
         if (match) {
-          console.log('Login ok.');
-
           let user = {
             username: req.body.username,
             password: foundHashed,
@@ -330,7 +308,7 @@ app.post('/login', urlencodedParser, function(req, res) {
         }
       }
     } catch (error) {
-      console.log('/login ERROR! ' + error);
+      console.log('Error at /login! ' + error);
     }
   })();
 });
@@ -340,10 +318,12 @@ function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
 
   console.log('Token from server: ' + token);
-  if (token == null) return res.sendStatus(401);
-  jwt.verify(token, secrets.jwtSecret, (err, user) => {
+  if (token == null)
+    return res.sendStatus(401);
+    jwt.verify(token, secrets.jwtSecret, (err, user) => {
     console.log(err);
-    if (err) return res.sendStatus(403);
+    if (err)
+      return res.sendStatus(403);
     req.user = user;
     console.log('User (decoded): ' + JSON.stringify(user));
     next();
