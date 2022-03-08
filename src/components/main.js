@@ -45,6 +45,10 @@ const Main = () => {
     resetChatForm()
   }
 
+  const [validatedQuestionForm, setValidateQuestionForm] = useState("")
+  const [showChatQuestionMessage, setShowChatQuestionMessage] = useState("");
+
+
   const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
   const imagePath = ["img/kimpitie.jpg", "img/berliininkatu.jpg", "img/hakaniemenranta.jpg", "img/siltakuja.jpg", "img/vaskivuorentie.jpg",  "img/juusintie.jpg", "img/kilonkallio.jpg","img/haukilahdenkuja.jpg", "img/leppäsuonkatu.jpg", "img/majurinkulma.jpg", "img/servinkuja.jpg",  "img/akanapolku.jpg"];
 
@@ -52,6 +56,9 @@ const Main = () => {
 
   const [newUsername, setNewUsername] = useState(0)
   const [newHeader, setNewChatHeader] = useState(0)
+
+  const [header, setChatHeader] = useState([])
+
 
   const ul = {
     display: "flex",
@@ -96,6 +103,11 @@ const Main = () => {
   const handleAnswerChange = (event) =>{
     console.log(event.target.value)
     setNewAnswer(event.target.value)
+  }
+
+  const resetQuestionForm = () => {
+    document.getElementById("formChatQuestion").reset();
+    setValidateQuestionForm(false)
   }
 
   const reset = () => {
@@ -185,12 +197,29 @@ const Main = () => {
     console.log("showAnswers function")
     console.log("chat id " + id)
     setShowModal3(true)
+    getHeader(id)
     openChat(id)
     setNewChatId(id)
   }
 
+  function getHeader(id) {
 
-  //Chat kysymysten vastaukset
+    axios
+        .get('http://localhost:8080/api/chatheader?id='+ id)
+        .then(response => {
+          console.log('Vastaus chat header: ' + JSON.stringify(response.data))
+          let json = JSON.stringify(response.data)
+          if (json.length > 0) {
+            setChatHeader(response.data)
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
+  }
+
+
+
+    //Chat kysymysten vastaukset
   function openChat(id) {
 
     axios
@@ -320,8 +349,9 @@ const Main = () => {
     const answerObject = {
       id_chat: newChatId,
       answer: newAnswer,
+      username: newUsername
     }
-    console.log('answerObject: ' + answerObject.id_chat + ", " + answerObject.answer)
+    console.log('answerObject: ' + answerObject.id_chat + ", " + answerObject.answer + ', ' + answerObject.username)
 
     axios
         .post('http://localhost:8080/api/addchatanswer', answerObject)
@@ -367,11 +397,11 @@ const Main = () => {
     if(form.checkValidity() === false){
       event.stopPropagation();
     }
-    //setValidateForm(true);
+    setValidateQuestionForm(true);
     if(form.checkValidity() === false){
       return
     }
-    setValidateForm(true);
+    setValidateQuestionForm(true);
 
     const questionObject = {
       username: newUsername,
@@ -386,11 +416,11 @@ const Main = () => {
           console.log(response)
 
           if(response.status === 200)
-            setChatMessage('Uuden kysymyksen lisääminen onnistui!')
+            setShowChatQuestionMessage('Uuden kysymyksen lisääminen onnistui!')
           else if(response.status === 401)
-            setChatMessage('Uuden kysymyksen lisääminen epäonnistui, täytä puuttuvat kentät!')
+            setShowChatQuestionMessage('Uuden kysymyksen lisääminen epäonnistui, täytä puuttuvat kentät!')
 
-          //resetChatForm()
+          resetQuestionForm()
         })
   }
 
@@ -550,7 +580,7 @@ const Main = () => {
         </div>
 
         <Form style={{justifyContent:'center',
-          alignItems:'center'}} form id="formChat" noValidate onSubmit={addChatQuestion}>
+          alignItems:'center'}} form id="formChatQuestion" noValidate validated={validatedQuestionForm} onSubmit={addChatQuestion}>
           <Form.Group >
             <Form.Label>Kirjoita uusi kysymys:</Form.Label>
             <Form.Control
@@ -560,6 +590,7 @@ const Main = () => {
                 placeholder=""
             />
             <Form.Control.Feedback type="invalid">Täytä kenttä!</Form.Control.Feedback>
+            <p> {showChatQuestionMessage}</p>
           </Form.Group>
           <p></p>
           <br/>
@@ -572,16 +603,20 @@ const Main = () => {
                onHide={handleCloseModal3}
                backdrop="static"
                keyboard={false}>
+
           <Modal.Header closeButton>
-                <Modal.Title>Vastaukset:</Modal.Title>
+            {header.map(n => (
+                <Modal.Title key={''+ n.id}>{n.header}</Modal.Title>
+            ))}
           </Modal.Header>
+
           <Modal.Body>
             <Table striped>
               <tbody>
               {content.map(answers => (
                   <tr>
                     <td>
-                      <p key={''+ answers.id_chat}>{answers.answer}</p>
+                      <p key={''+ answers.id_chat}>{answers.answer} {answers.username}</p>
                     </td>
                   </tr>
               ))}

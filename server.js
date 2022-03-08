@@ -142,7 +142,7 @@ app.get('/api/chatheader', function(req, res) {
   const id = q.id;
   let string;
 
-  const sql = 'SELECT header, username'
+  const sql = 'SELECT header'
       + ' FROM chat'
       + ' WHERE id=?';
 
@@ -165,7 +165,7 @@ app.get('/api/chatcontent', function(req, res) {
   const id = q.id;
   let string;
 
-  const sql = 'SELECT answer'
+  const sql = 'SELECT answer, username'
       + ' FROM chat_answers'
       + ' WHERE id_chat=?';
 
@@ -217,12 +217,13 @@ app.post('/api/addchatanswer', urlencodedParser, function(req, res) {
 
   let chattianswer = JSON.stringify(json);
   res.send('POST succesful chat: ' + chattianswer);
+  console.log('' + chattianswer)
 
-  const sql = 'INSERT INTO chat_answers (id_chat, answer) VALUES ( ?, ?)';
+  const sql = 'INSERT INTO chat_answers (id_chat, answer, username) VALUES ( ?, ?, ?)';
 
   (async () => {
     try {
-      const result = await query(sql, [json.id_chat, json.answer]);
+      const result = await query(sql, [json.id_chat, json.answer, json.username]);
       let insertedId = result.insertId;
     } catch (err) {
       console.log('Insertion into tables was unsuccessful!' + err);
