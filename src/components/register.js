@@ -15,15 +15,17 @@ const Register = () => {
   const usernameFocus = React.useRef();
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
-  let [, setResponseValue] = useState(0);
 
   let loginObject = {
     username: usernameValue,
     password: pwdValue,
   }
 
+// Trigger addInfo() when form is submitted.
   const addInfo = async (event) => {
     const form = event.currentTarget;
+    // Check if both username and password fields are not empty.
+    // If either is empty, enter if-statement where error is shown.
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
@@ -32,21 +34,26 @@ const Register = () => {
     } else {
       event.preventDefault();
     }
-
+    // If both fields have data, reset form and move focus on username field.
     formReset.current.reset();
     setValidated(false);
     usernameFocus.current.focus();
 
+    // Send form data to server.
     await axios
         .post('http://localhost:8080/api/adduser', loginObject)
-        .then(response => {
-          setResponseValue(response.status);
+        .then(async response => {
+          // If user already exists in database, receive status 202 from server and show error.
           if (response.status === 202) {
             setSuccess(false);
             setFailure(true);
+            // If user was added to database successfully, receive status 201 from server and show success message.
           } else if (response.status === 201) {
             setFailure(false);
             setSuccess(true);
+            // Wait 2 seconds before redirect to login page.
+            await new Promise(r => setTimeout(r, 2000));
+            window.location.href = "/login";
           }
         })
   };
@@ -81,7 +88,7 @@ const Register = () => {
               Salasana vaaditaan.
             </Form.Control.Feedback>
             <Form.Control.Feedback/>
-            {success && <div className="alert alert-success" role="alert" style={marginTop}>Rekisteröityminen onnistui.</div>}
+            {success && <div className="alert alert-success" role="alert" style={marginTop}>Rekisteröityminen onnistui!<br /> Uudelleenohjataan...</div>}
             {failure && <div className="alert alert-danger" role="alert" style={marginTop}>Käyttäjä on jo olemassa.</div>}
           </Form.Group>
         </Col>

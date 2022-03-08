@@ -27,7 +27,7 @@ const Login = () => {
   const addInfo = async (event) => {
     const form = event.currentTarget;
     // Check if both username and password fields are not empty.
-    // If either is empty, enter if-statement and show client side error.
+    // If either is empty, enter if-statement where error is shown.
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
