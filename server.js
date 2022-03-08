@@ -65,7 +65,7 @@ app.get('/api/results', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error!' + err);
+      console.log('Database error in /api/results! ' + err);
     }
   })();
 });
@@ -88,7 +88,7 @@ app.get('/api/address', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error! api/address' + err);
+      console.log('Database error in /api/address! ' + err);
     }
   })();
 });
@@ -108,7 +108,7 @@ app.get('/api/apartments', function(req, res) {
       string = JSON.stringify(rows);
       res.send(string);
     } catch (err) {
-      console.log('Database error!' + err);
+      console.log('Database error in !' + err);
     }
   })();
 });
