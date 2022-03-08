@@ -1,70 +1,50 @@
-# Getting Started with Create React App
+Projektin tavoite
+-
+Projektin tavoitteena on muuntaa Web 1-kurssilla puhtaasti Javascriptillä tehty nettisivu React-pohjaiseksi. Projekti on jaettu komponentteihin rekisteröityminen, sisäänkirjautuminen, pääikkuna ja navigointipalkki. Viimeisin sijaitsee App.js-tiedostossa.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Projektissa on hyödynnetty React Bootstrap-kirjastoa, mitä on avustettu lisäämällä omia tyylejä.
 
-## Available Scripts
+REST rajapinnan kuvaus
+-
 
-In the project directory, you can run:
+Projekti on toteutettu REST- rajapintaa hyödyntäen. Tietokannasta haetaan dataa GET metodeilla ja tietokantaan viedään dataa POST metodeilla.
 
-### `npm start`
+GET metodia käytetään projektissa:
+-
+Asuntojen osotteiden hakemiseen: "/api/address"
+* SQL kyselyssä haetaan kaikki apartments taulun osoitteet ja id:t, jotta ne voidaan asettaa sivulla oleville kohteille.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Arvostelujen hakemiseen: "/api/results"
+* SQL kyselyssä haetaan klikattua id:tä vastaavan asunnon osoite, id, kunto, viihtyvyys, kokonaisarvosana, sekä vapaasana teitokannasta. Apartments taulussa on osoitetiedot sekä pääavaimena id, joka viittaa reviews taulun id:hen joka toimii vierasavaimena.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Keskustelupalstan otsikoiden hakemiseen: "/api/chat"
+* SQL kyselyssä haetaan otsikko, otsikolle id sekä käyttäjätunnus tietokannan chat taulusta.
 
-### `npm test`
+Keskustelujen vastauksien hakemiseen
+* SQL kyselyssä haetaan chat_answers taulusta kaikki vastaukset jotka on lisätty tiettyyn keskusteluun. Haku tapahtuu id:n perusteella.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Rekiteröitymisessä tarkastetaan onko käyttäjätunnus jo olemassa
+* SQL kyselyssä haetaan tietokannasta käyttäjänimeä, jonka käyttäjä on syöttänyt inputkenttään. Mikäli käyttäjänimi löytyy jo tietokannasta, annetaan virheilmoitus.
 
-### `npm run build`
+Kirjautumisessa tarkastetaan käyttäjätunnuksen ja sitä vastaavan salasanan yhteensopivuus
+* SQL kyselyssä etsitään tietokannasta kyseinen käyttäjätunnus ja salasana. Mikäli ne vastaavat toisiaan sisäänkirjoutuminen onnistuu, muuten annetaan virheilmoitus.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+POST metodia käytetään projektissa:
+-
+Arvostelulomakkeen lähetys: "/api/sendform"
+* SQL kyselyssä reviews tauluun lisätään arvot (kunto, viihtyvyys, kokonaisarvosana, vapaasana) käyttäjän syöttämän datan perusteella. Kohteen id johon arvostelu lisätään saadaan app.get kyselyllä tietokannasta.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Uuden keskustelun aloitus: "/api/addchat"
+* SQL kyselyssä chat tauluun lisätään käyttäjätunnus ja käyttäjän kirjoittama otsikko.
 
-### `npm run eject`
+Vastauksen lisääminen uuteen keskusteluun: "/api/addchatanswer"
+* SQL kyselyssä chat_answers tauluun lisätään vastaus sekä chatin id sen perusteella mihin keskusteluun käyttäjä lähettää vastauksen.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Käyttäjän kirjautuminen
+* SQL kyselyssä lähetetään post sanomana käyttäjän syöttämien input kenttien arvot serverille.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Uuden käyttäjän rekisteröityminen
+* SQL kyselyllä lisätään uuden käyttäjn käyttäjätunnus ja salasana tietokanaan.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
