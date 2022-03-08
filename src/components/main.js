@@ -71,12 +71,11 @@ const Main = () => {
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
 
-    //Käyttäjänimi chattiin
-    let user = JSON.parse(loggedInUser);
-    setNewUsername(user.username)
-
     if (loggedInUser) {
       setUserBoolean(true);
+      //Käyttäjänimi chattiin
+      let user = JSON.parse(loggedInUser);
+      setNewUsername(user.username)
     }
   }, []);
 
