@@ -575,14 +575,12 @@ const Main = () => {
               <ListGroup style={{justifyContent:'center',
                 alignItems:'center'}}>
                 <ListGroup.Item action variant="dark" style={{maxWidth: 600, justifyContent:'center',
-                  alignItems:'center', display: "flex",
-                  flexWrap: "wrap"}} onClick={() => showAnswers(chat.id)} key={''+chat.id}> <p style={{fontWeight: 'bold', marginRight: 5}}>{chat.header}</p> <p>{chat.username}</p></ListGroup.Item>
-                <br/>
+                  alignItems:'center'}} onClick={() => showAnswers(chat.id)} key={''+chat.id}> <p>{chat.username}</p> <p style={{fontWeight: 'bold', marginRight: 5}}>{chat.header}</p></ListGroup.Item>
               </ListGroup>
           ))}
 
 
-          <Form  form id="formChatQuestion" noValidate validated={validatedQuestionForm} onSubmit={addChatQuestion}>
+          {userBoolean &&<Form  form id="formChatQuestion" noValidate validated={validatedQuestionForm} onSubmit={addChatQuestion}>
             <Form.Group>
               <Form.Label style={{fontWeight: 'bold'}}>Kirjoita uusi kysymys:</Form.Label>
               <Form.Control style={{display: 'block', margin: 'auto', justifyContent:'center',
@@ -597,9 +595,9 @@ const Main = () => {
             </Form.Group>
             <p></p>
             <br/>
-            <Button variant="secondary" type="submit">Lähetä kysymys</Button>
+             <Button variant="secondary" type="submit">Lähetä kysymys</Button>
             <br/>
-          </Form>
+          </Form>}
 
         </div>
 
@@ -609,7 +607,7 @@ const Main = () => {
                backdrop="static"
                keyboard={false}>
 
-          <Modal.Header closeButton>
+          <Modal.Header style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}} closeButton>
             {header.map(n => (
                 <Modal.Title key={''+ n.id}>{n.header}</Modal.Title>
             ))}
@@ -621,7 +619,7 @@ const Main = () => {
               {content.map(answers => (
                   <tr>
                     <td>
-                      <p key={''+ answers.id_chat}>{answers.answer} {answers.username}</p>
+                      <p key={''+ answers.id_chat}> <p>{answers.username}</p> <p style={{fontWeight: 'bold', marginRight: 5}}> {answers.answer}</p> </p>
                     </td>
                   </tr>
               ))}
@@ -629,7 +627,7 @@ const Main = () => {
               </tbody>
             </Table>
 
-            <Form form id="formChat" noValidate validated={validatedForm} onSubmit={addAnswer}>
+            {userBoolean &&<Form form id="formChat" noValidate validated={validatedForm} onSubmit={addAnswer}>
               <Form.Group>
                 <Form.Label  style={{fontWeight: 'bold'}}>Kirjoita vastaus:</Form.Label>
                 <Form.Control
@@ -642,9 +640,9 @@ const Main = () => {
               </Form.Group>
               <p>{chatMessage}</p>
               <br/>
-              <Button variant="secondary" type="submit">Lähetä vastaus</Button>
+               <Button variant="secondary" type="submit">Lähetä vastaus</Button>
               <br/>
-            </Form>
+            </Form>}
 
           </Modal.Body>
         </Modal>
