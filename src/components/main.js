@@ -568,14 +568,12 @@ const Main = () => {
         <div style={{justifyContent:'center',
           alignItems:'center'}}>
           <h3 style={{justifyContent:'center',
-            alignItems:'center', display: "flex",
-            flexWrap: "wrap", fontWeight: 'bold'}}>Keskustelupalsta</h3>
-          <br/>
+            alignItems:'center', fontWeight: 'bold', backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white', maxWidth: 600, display: 'block', margin: 'auto', borderRadius: 5, padding: 5}}>Keskustelupalsta</h3>
           {chat.map(chat => (
               <ListGroup style={{justifyContent:'center',
                 alignItems:'center'}}>
                 <ListGroup.Item action variant="dark" style={{maxWidth: 600, justifyContent:'center',
-                  alignItems:'center'}} onClick={() => showAnswers(chat.id)} key={''+chat.id}> <p>{chat.username}</p> <p style={{fontWeight: 'bold', marginRight: 5}}>{chat.header}</p></ListGroup.Item>
+                  alignItems:'center'}} onClick={() => showAnswers(chat.id)} key={''+chat.id}> <p style={{display: 'flex', flexWrap: 'wrap'}}><p>{chat.username}</p> <p style={{marginLeft: 5}}>{chat.date}</p></p> <p style={{fontWeight: 'bold', marginRight: 5}}>{chat.header}</p></ListGroup.Item>
               </ListGroup>
           ))}
 
@@ -619,7 +617,7 @@ const Main = () => {
               {content.map(answers => (
                   <tr>
                     <td>
-                      <p key={''+ answers.id_chat}> <p>{answers.username}</p> <p style={{fontWeight: 'bold', marginRight: 5}}> {answers.answer}</p> </p>
+                      <p key={''+ answers.id_chat}> <p>{answers.username}</p> <p>{answers.date}</p><p style={{fontWeight: 'bold', marginRight: 5}}> {answers.answer}</p> </p>
                     </td>
                   </tr>
               ))}

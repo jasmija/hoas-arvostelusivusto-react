@@ -120,7 +120,7 @@ app.get('/api/chat', function(req, res) {
   const q = url.parse(req.url, true).query;
   let string;
 
-  const sql = 'SELECT id, username, header'
+  const sql = 'SELECT id, username, header, date, DATE_FORMAT(date, "%d.%m.%Y") AS date'
       + ' FROM chat';
 
   (async () => {
@@ -165,7 +165,7 @@ app.get('/api/chatcontent', function(req, res) {
   const id = q.id;
   let string;
 
-  const sql = 'SELECT answer, username'
+  const sql = 'SELECT answer, username, date, DATE_FORMAT(date, "%d.%m.%Y") AS date'
       + ' FROM chat_answers'
       + ' WHERE id_chat=?';
 
