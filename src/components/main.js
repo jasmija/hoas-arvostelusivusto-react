@@ -270,12 +270,30 @@ const Main = () => {
         .post('http://localhost:8080/api/addchatanswer', answerObject)
         .then(response => {
 
-          if(response.status === 200)
+          if(response.status === 200){
+            setUpdatedChatAnswers(newChatId)
             setChatMessage('Uuden chatin lisääminen onnistui!')
+          }
           else if(response.status === 401)
             setChatMessage('Uuden chatin lisääminen epäonnistui, täytä puuttuvat kentät!')
 
           resetChatForm()
+        })
+  }
+
+  //Get updated chat answers from database
+  function setUpdatedChatAnswers(id){
+
+    axios
+        .get('http://localhost:8080/api/chatcontent?id='+ id)
+        .then(response => {
+          let json = JSON.stringify(response.data)
+
+          if (json.length > 0) {
+            setChatContent(response.data)
+          } else {
+            console.log("Ei löytynyt vastauksia");
+          }
         })
   }
 
@@ -303,15 +321,36 @@ const Main = () => {
         .post('http://localhost:8080/api/addchat', questionObject)
         .then(response => {
 
-          if(response.status === 200)
+          if(response.status === 200){
+            setUpdatedChatContents()
             setShowChatQuestionMessage('Uuden kysymyksen lisääminen onnistui!')
+          }
           else if(response.status === 401)
             setShowChatQuestionMessage('Uuden kysymyksen lisääminen epäonnistui, täytä puuttuvat kentät!')
 
           resetQuestionForm()
         })
   }
-  
+
+  //Get updated chat data from database
+  function setUpdatedChatContents(){
+    console.log("ennen get")
+    axios
+        .get('http://localhost:8080/api/chat')
+        .then(response => {
+
+          console.log(response.data)
+          let json = response.data;
+
+          if (json.length > 0) {
+            console.log("inside if")
+            setChat(response.data)
+          } else {
+            console.log("Ei löytynyt yhtäkään asuntoa");
+          }
+        })
+  }
+
   const [wordEntered, setWordEntered] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
@@ -388,7 +427,7 @@ const Main = () => {
               backdrop="static"
               keyboard={false}
           >
-            <Modal.Header closeButton onClick={reset}>
+            <Modal.Header style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}} closeButton closeVariant={'white'} onClick={reset}>
               {name.map(content => (
                   <Modal.Title key={''+ content.id} id="apartmentaddress">Arvostelu kohteeseen: <b>{content.address}</b> </Modal.Title>
               ))}
@@ -447,7 +486,7 @@ const Main = () => {
                 <br/>
                 <div show={showMessage}>{formMessage}</div>
                 <br/>
-                <Button type="submit">Lähetä</Button>
+                <Button variant="secondary" type="submit">Lähetä</Button>
                 <br/>
               </Form>
             </Modal.Body>
@@ -458,7 +497,7 @@ const Main = () => {
               onHide={handleCloseModal2}
               backdrop="static"
               keyboard={false}>
-            <Modal.Header closeButton>
+            <Modal.Header style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}} closeButton closeVariant={'white'}>
               {name.map(content => (
                   <Modal.Title key={''+ content.id} id="apartmentaddress">Arvostelut kohteesta: <b>{content.address}</b></Modal.Title>
               ))}
@@ -523,7 +562,7 @@ const Main = () => {
                onHide={handleCloseModal3}
                backdrop="static"
                keyboard={false}>
-          <Modal.Header style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}} closeButton>
+          <Modal.Header style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}} closeButton closeVariant={'white'}>
             {header.map(content => (
                 <Modal.Title key={''+ content.id}>{content.header}</Modal.Title>
             ))}
