@@ -5,60 +5,57 @@ import '../css/main.css';
 
 const Main = () => {
 
+  const [apartments, setApartments] = useState([0])
+  const [name, setName] = useState([0]);
+  const [ratings, setRatings] = useState([0])
+  const [userBoolean, setUserBoolean] = useState(false);
+
+  //Hooks for add new review
   const [newId, setNewId] = useState(0)
   const [newShape, setNewShape] = useState("Erinomainen")
   const [newComfort, setNewComfort] = useState("1")
   const [newGrade, setNewGrade] = useState("1")
   const [newWord, setNewWord] = useState("")
-  const [validated, setValidate] = useState("")
 
+  //Hooks for review form validation
+  const [validated, setValidate] = useState("")
+  const [formMessage, setMessage] = useState('');
+  const [showMessage, setShowMessage] = useState(false);
+
+  //Hooks for chat
   const [newAnswer, setNewAnswer] = useState("")
   const [newChatId, setNewChatId] = useState(0)
+  const [chat, setChat] = useState([0]);
+  const [content, setChatContent] = useState([0]);
+  const [newUsername, setNewUsername] = useState(0)
+  const [newHeader, setNewChatHeader] = useState(0)
+  const [header, setChatHeader] = useState([])
+
+  //Hooks for chat validation
   const [validatedForm, setValidateForm] = useState("")
   const [chatMessage, setChatMessage] = useState('');
+  const [validatedQuestionForm, setValidateQuestionForm] = useState("")
+  const [showChatQuestionMessage, setShowChatQuestionMessage] = useState("");
 
-  const [formMessage, setMessage] = useState(''); //arvostelu lisätty onnistuneesti teksti
-  const [showMessage, setShowMessage] = useState(false); //tekstin näyttäminen/piilotus
-
-  const [apartments, setApartments] = useState([0]) //asunnot tietokannasta sivulle
-  const [name, setName] = useState([0]); //asuntojen nimet otsikoksi
-
-  const [chat, setChat] = useState([0]); //chatin sisältö
-  const [content, setChatContent] = useState([0]); //chatin sisältö
-
-  const [showModal, setShowModal] = useState(false); //modaali
-  //modaali sulku
+  //Modal for rating form
+  const [showModal, setShowModal] = useState(false);
   const handleCloseModal = () => {
     setShowModal(false);
     setMessage(false);
     reset()
   }
 
-  const [showModal2, setShowModal2] = useState(false); //modaali
-  const handleCloseModal2= () => setShowModal2(false); //modaali sulku
+  //Modal for reviews
+  const [showModal2, setShowModal2] = useState(false);
+  const handleCloseModal2= () => setShowModal2(false);
 
-  const [showModal3, setShowModal3] = useState(false); //modaali
-  //modaali sulku
+  //Modal for chat
+  const [showModal3, setShowModal3] = useState(false);
   const handleCloseModal3= () => {
     setShowModal3(false);
     setChatMessage(false);
     resetChatForm()
   }
-
-  const [validatedQuestionForm, setValidateQuestionForm] = useState("")
-  const [showChatQuestionMessage, setShowChatQuestionMessage] = useState("");
-
-
-  const [ratings, setRatings] = useState([0]) //arvostelut tietokannasta
-  const imagePath = ["img/kimpitie.jpg", "img/berliininkatu.jpg", "img/hakaniemenranta.jpg", "img/siltakuja.jpg", "img/vaskivuorentie.jpg",  "img/juusintie.jpg", "img/kilonkallio.jpg","img/haukilahdenkuja.jpg", "img/leppäsuonkatu.jpg", "img/majurinkulma.jpg", "img/servinkuja.jpg",  "img/akanapolku.jpg"];
-
-  const [userBoolean, setUserBoolean] = useState(false);
-
-  const [newUsername, setNewUsername] = useState(0)
-  const [newHeader, setNewChatHeader] = useState(0)
-
-  const [header, setChatHeader] = useState([])
-
 
   const ul = {
     display: "flex",
@@ -68,42 +65,45 @@ const Main = () => {
     padding: 10,
   }
 
+  //If user is logged in set userBoolean variable true
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
 
     if (loggedInUser) {
       setUserBoolean(true);
-      //Käyttäjänimi chattiin
+
+      //Set username for chat
       let user = JSON.parse(loggedInUser);
       setNewUsername(user.username)
     }
   }, []);
 
+  //Handle functions for form input fields
   const handleShapeChange = (event) => {
-    console.log(event.target.value)
     setNewShape(event.target.value)
   }
 
   const handleComfortChange = (event) => {
-    console.log(event.target.value)
     setNewComfort(event.target.value)
   }
 
   const handleGradeChange = (event) => {
-    console.log(event.target.value)
     setNewGrade(event.target.value)
   }
 
   const handleWordChange = (event) => {
-    console.log(event.target.value)
     setNewWord(event.target.value)
   }
 
   const handleAnswerChange = (event) =>{
-    console.log(event.target.value)
     setNewAnswer(event.target.value)
   }
 
+  const handleQuestionChange = (event) =>{
+    setNewChatHeader(event.target.value)
+  }
+
+  //Reset functions for forms
   const resetQuestionForm = () => {
     document.getElementById("formChatQuestion").reset();
     setValidateQuestionForm(false)
@@ -119,38 +119,32 @@ const Main = () => {
     setValidateForm(false)
   }
 
-  //Klikatun asunnon nimi asetetaan modaaalin otsikoksi
+  //Set apartment name to modal header
   function makeQueryForAddNewReview(id) {
     const apartment = id;
-    console.log("id "+ apartment)
 
     axios
         .get('http://localhost:8080/api/address?id='+ apartment)
         .then(response => {
-          console.log('Vastaus: ' + JSON.stringify(response.data))
           let json = JSON.stringify(response.data)
-          setName(response.data)
+
           if (json.length > 0) {
+            setName(response.data)
           } else {
-            console.log("Ei löytynyt yhtäkään asuntoa");
+            console.log("Ei löytynyt asuntoa");
           }
         })
   }
 
-  //Asuntojen osoitteet otsikoksi kun sivu ladataan
+  //Set apartment addresses and chat content from database when page loads
   useEffect(() => {
+
     axios
         .get('http://localhost:8080/api/apartments')
         .then(response => {
-          console.log('Vastaus: ' + JSON.stringify(response.data))
-          let json;
-          json = JSON.stringify(response.data);
-          console.log("json " + json.address)
-          json = response.data;
+          let json = response.data;
 
           if (json.length > 0) {
-            console.log("json pituus isompi kuin 0")
-            console.log(response.data)
             setApartments(response.data)
             setFilteredData(response.data)
           } else {
@@ -161,13 +155,9 @@ const Main = () => {
     axios
         .get('http://localhost:8080/api/chat')
         .then(response => {
-          console.log('Vastaus chat: ' + JSON.stringify(response.data))
-          let json;
-          json = response.data;
+          let json = response.data;
 
           if (json.length > 0) {
-            console.log("json pituus isompi kuin 0")
-            console.log(response.data)
             setChat(response.data)
           } else {
             console.log("Ei löytynyt yhtäkään asuntoa");
@@ -175,68 +165,41 @@ const Main = () => {
         })
   },[])
 
-  function showForm(id) {
-    console.log("showForm function")
-    console.log("id passed " + id)
-    setNewId(id)
-    console.log("newId " + newId)
-    setShowModal(true)
-    makeQueryForAddNewReview(id)
-  }
-
-  function showReviews(id){
-    console.log("showReviews function")
-    console.log("id passed " + id)
-    setShowModal2(true)
-    makeQueryForAddNewReview(id)
-    showRatings(id)
-  }
-
-  function showAnswers(id){
-    console.log("showAnswers function")
-    console.log("chat id " + id)
-    setShowModal3(true)
-    getHeader(id)
-    openChat(id)
-    setNewChatId(id)
-  }
-
-  function getHeader(id) {
+  //Get clicked chats header from database
+  function getChatHeader(id) {
 
     axios
         .get('http://localhost:8080/api/chatheader?id='+ id)
         .then(response => {
-          console.log('Vastaus chat header: ' + JSON.stringify(response.data))
           let json = JSON.stringify(response.data)
+
           if (json.length > 0) {
             setChatHeader(response.data)
           } else {
-            console.log("Ei löytynyt yhtäkään asuntoa");
+            console.log("Ei löytynyt chatin otsikkoa");
           }
         })
   }
 
-
-
-    //Chat kysymysten vastaukset
+  //Get answers for chat questions from database
   function openChat(id) {
 
     axios
         .get('http://localhost:8080/api/chatcontent?id='+ id)
         .then(response => {
-          console.log('Vastaus chat content: ' + JSON.stringify(response.data))
           let json = JSON.stringify(response.data)
+
           if (json.length > 0) {
             setChatContent(response.data)
           } else {
-            console.log("Ei löytynyt yhtäkään asuntoa");
+            console.log("Ei löytynyt vastauksia");
           }
         })
   }
-
+  
+  //Add new apartment review to database
   const addRating = event =>{
 
-    console.log("ADD RATING")
     event.preventDefault()
 
     const form = event.currentTarget;
@@ -249,8 +212,6 @@ const Main = () => {
     }
     setValidate(true);
 
-    console.log("ratingobject newId " + newId)
-
     const ratingObject = {
       id: newId,
       shape: newShape,
@@ -258,81 +219,35 @@ const Main = () => {
       grade: newGrade,
       word: newWord
     }
-    console.log(ratingObject);
 
     axios
         .post('http://localhost:8080/api/sendform', ratingObject)
         .then(response => {
-          console.log('ratingObject: ' + JSON.stringify(ratingObject))
-          console.log(response)
 
-          setNewId('')
-          setNewShape('')
-          setNewComfort('')
-          setNewGrade('')
-          setNewWord('')
           if(response.status === 200)
             setMessage('Uuden arvostelun lisääminen onnistui!')
           else if(response.status === 401)
             setMessage('Uuden arvostelun lisääminen epäonnistui, täytä puuttuvat kentät!')
           setShowMessage(true)
+
           reset()
         })
   }
 
-  //Arvostelujen keskiarvo
-  function countAverage(json) {
-
-    let sumcomfort = 0;
-    let sumgrade = 0;
-    let sumshape = 0;
-
-    for (let i = 0; i < json.length; i++) {
-      sumcomfort = sumcomfort + json[i].comfort;
-      sumgrade = sumgrade + json[i].grade;
-
-      if (json[i].shape === 'Välttävä') {
-        json[i].shape = 1;
-      } else if (json[i].shape === 'Tyydyttävä') {
-        json[i].shape = 2;
-      } else if (json[i].shape === 'Hyvä') {
-        json[i].shape = 3;
-      } else if (json[i].shape === 'Kiitettävä') {
-        json[i].shape = 4;
-      } else if (json[i].shape === 'Erinomainen') {
-        json[i].shape = 5;
-      }
-      sumshape = sumshape + json[i].shape;
-    }
-
-    const averageshape = (sumshape / json.length).toFixed(0);
-    const averagecomfort = (sumcomfort / json.length).toFixed(0);
-    const averagegrade = (sumgrade / json.length).toFixed(0);
-
-    console.log("averageshape " + averageshape + ", averagecomfort " + averagecomfort + ", " + "averagegrade " + averagegrade)
-
-  }
-
-  //Näytetäään asunnon kaikki arvostelut
+  //Show all reviews for a specific apartment
   function showRatings(id){
-    console.log("SHOW RATING")
-    console.log("passed id: " + id)
-    let json;
 
     axios
         .get('http://localhost:8080/api/results?id='+id)
         .then(response => {
-          console.log('Vastaus: ' + JSON.stringify(response.data))
           setRatings([])
           setRatings(response.data)
-          json = response.data;
-          countAverage(json);
         })
   }
 
+  //Add answer for chat question
   const addAnswer = event => {
 
-    console.log("SEND CHAT ANSWER")
     event.preventDefault()
 
     const form = event.currentTarget;
@@ -350,13 +265,10 @@ const Main = () => {
       answer: newAnswer,
       username: newUsername
     }
-    console.log('answerObject: ' + answerObject.id_chat + ", " + answerObject.answer + ', ' + answerObject.username)
 
     axios
         .post('http://localhost:8080/api/addchatanswer', answerObject)
         .then(response => {
-          console.log('answerObject: ' + JSON.stringify(answerObject))
-          console.log(response)
 
           if(response.status === 200)
             setChatMessage('Uuden chatin lisääminen onnistui!')
@@ -367,29 +279,9 @@ const Main = () => {
         })
   }
 
-  const [wordEntered, setWordEntered] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
-
-
-
-  const handleFilter = () => {
-    const searchWord = document.getElementById("search").value;
-    setWordEntered(searchWord);
-    const newFilter = apartments.filter((value) => {
-      return value.address.toLowerCase().includes(searchWord.toLowerCase());
-    });
-
-    if (searchWord === '') {
-      setFilteredData(apartments);
-    } else {
-      setFilteredData(newFilter);
-    }
-  };
-
-
+  //Add new question to chat
   const addChatQuestion = event => {
 
-    console.log("SEND CHAT QUESTION")
     event.preventDefault()
 
     const form = event.currentTarget;
@@ -406,13 +298,10 @@ const Main = () => {
       username: newUsername,
       header: newHeader,
     }
-    console.log('questionObject: ' + questionObject.username + ", " + questionObject.header)
 
     axios
         .post('http://localhost:8080/api/addchat', questionObject)
         .then(response => {
-          console.log('questionObject: ' + JSON.stringify(questionObject))
-          console.log(response)
 
           if(response.status === 200)
             setShowChatQuestionMessage('Uuden kysymyksen lisääminen onnistui!')
@@ -422,12 +311,47 @@ const Main = () => {
           resetQuestionForm()
         })
   }
+  
+  const [wordEntered, setWordEntered] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
 
-  const handleQuestionChange = (event) =>{
-    console.log(event.target.value)
-    setNewChatHeader(event.target.value)
+  //Filter apartments by user input
+  const handleFilter = () => {
+    const searchWord = document.getElementById("search").value;
+    setWordEntered(searchWord);
+    const newFilter = apartments.filter((value) => {
+      return value.address.toLowerCase().includes(searchWord.toLowerCase());
+    });
+
+    if (searchWord === '') {
+      setFilteredData(apartments);
+    } else {
+      setFilteredData(newFilter);
+    }
+  };
+
+  //Set id for review form, show modal, and calls function which show apartment address in modal header
+  function showForm(id) {
+    setNewId(id)
+    setShowModal(true)
+    makeQueryForAddNewReview(id)
   }
 
+  //Show review modal, calls function which show apartment address in modal header, calls function which get all reviews from database
+  function showReviews(id){
+    setShowModal2(true)
+    makeQueryForAddNewReview(id)
+    showRatings(id)
+  }
+
+  //Show chat answers modal, calls function which get chat header from database to modal header, calls function which get chat answers from database
+  function showAnswers(id){
+    setShowModal3(true)
+    getChatHeader(id)
+    openChat(id)
+    setNewChatId(id)
+  }
+  
   return (
       <div id="root">
         <div id="filter">
@@ -453,7 +377,7 @@ const Main = () => {
                       <Button style={{marginLeft: 5}} id={content.id} onClick={() => showReviews(content.id)} variant="light">Katso</Button>
                     </div>
                     </figcaption>
-                <img id="image" src={""+content.image} alt="kimpitie" />
+                <img id="image" src={""+content.image} alt="img" />
                 </figure>
               </ul>
           ))}
@@ -465,8 +389,8 @@ const Main = () => {
               keyboard={false}
           >
             <Modal.Header closeButton onClick={reset}>
-              {name.map(t => (
-                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelu kohteeseen: <b>{t.address}</b> </Modal.Title>
+              {name.map(content => (
+                  <Modal.Title key={''+ content.id} id="apartmentaddress">Arvostelu kohteeseen: <b>{content.address}</b> </Modal.Title>
               ))}
             </Modal.Header>
             <Modal.Body>
@@ -484,7 +408,6 @@ const Main = () => {
                   <Form.Control.Feedback type="invalid">Lisää kunto</Form.Control.Feedback>
                 </Form.Group>
                 <br/>
-
                 <Form.Group>
                   <Form.Label style={{fontSize:"20px"}}>Viihtyvyys</Form.Label>
                   <br />
@@ -498,7 +421,6 @@ const Main = () => {
                   <Form.Control.Feedback type="invalid">Lisää viihtyvyys</Form.Control.Feedback>
                 </Form.Group>
                 <br/>
-
                 <Form.Group>
                   <Form.Label style={{fontSize:"20px"}}>Kokonaisarvosana</Form.Label>
                   <br />
@@ -512,7 +434,6 @@ const Main = () => {
                   <Form.Control.Feedback type="invalid">Lisää kokonaisarvosana</Form.Control.Feedback>
                 </Form.Group>
                 <br/>
-
                 <Form.Group>
                   <Form.Label style={{fontSize:"20px"}}>Vapaa sana</Form.Label>
                   <Form.Control
@@ -538,24 +459,24 @@ const Main = () => {
               backdrop="static"
               keyboard={false}>
             <Modal.Header closeButton>
-              {name.map(t => (
-                  <Modal.Title key={''+ t.id} id="apartmentaddress">Arvostelut kohteesta: <b>{t.address}</b></Modal.Title>
+              {name.map(content => (
+                  <Modal.Title key={''+ content.id} id="apartmentaddress">Arvostelut kohteesta: <b>{content.address}</b></Modal.Title>
               ))}
             </Modal.Header>
             <Modal.Body>
               <Table striped>
                 <tbody>
-                {ratings.map(c => (
-                    <tr key={''+c.id}>
+                {ratings.map(content => (
+                    <tr key={''+content.id}>
                       <td>
-                        <p style={{fontSize:"22px"}}>Arvostelu lisätty: {c.date}</p>
-                        <p style={{display: 'inline-block', marginRight: 5}}><b>Kokonaisarvosana: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{c.grade}</p>
+                        <p style={{fontSize:"22px"}}>Arvostelu lisätty: {content.date}</p>
+                        <p style={{display: 'inline-block', marginRight: 5}}><b>Kokonaisarvosana: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{content.grade}</p>
                         <br />
-                        <p style={{display: 'inline-block', marginRight: 5}}><b>Kunto: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{c.shape}</p>
+                        <p style={{display: 'inline-block', marginRight: 5}}><b>Kunto: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{content.shape}</p>
                         <br />
-                        <p style={{display: 'inline-block', marginRight: 5}}><b>Viihtyvyys: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{c.comfort}</p>
+                        <p style={{display: 'inline-block', marginRight: 5}}><b>Viihtyvyys: </b></p><p style={{fontSize:"20px", display: 'inline-block'}}>{content.comfort}</p>
                         <br />
-                        <p><b>Vapaa sana: </b>{c.free_word}</p>
+                        <p><b>Vapaa sana: </b>{content.free_word}</p>
                       </td>
                     </tr>
                 ))}
@@ -569,14 +490,13 @@ const Main = () => {
           alignItems:'center'}}>
           <h3 style={{justifyContent:'center',
             alignItems:'center', fontWeight: 'bold', backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white', maxWidth: 600, display: 'block', margin: 'auto', borderRadius: 5, padding: 5}}>Keskustelupalsta</h3>
-          {chat.map(chat => (
+          {chat.map(content => (
               <ListGroup style={{justifyContent:'center',
                 alignItems:'center'}}>
                 <ListGroup.Item action variant="dark" style={{maxWidth: 600, justifyContent:'center',
-                  alignItems:'center'}} onClick={() => showAnswers(chat.id)} key={''+chat.id}> <p style={{display: 'flex', flexWrap: 'wrap'}}><p style={{textDecoration: 'underline'}}>{chat.username}</p> <p style={{marginTop: 0, right: 2, position: 'absolute'}}>{chat.date}</p></p> <p style={{fontWeight: 'bold', marginRight: 5}}>{chat.header}</p></ListGroup.Item>
+                  alignItems:'center'}} onClick={() => showAnswers(content.id)} key={''+content.id}> <p style={{display: 'flex', flexWrap: 'wrap'}}><p style={{textDecoration: 'underline'}}>{content.username}</p> <p style={{marginTop: 0, right: 2, position: 'absolute'}}>{content.date}</p></p> <p style={{fontWeight: 'bold', marginRight: 5}}>{content.header}</p></ListGroup.Item>
               </ListGroup>
           ))}
-
 
           {userBoolean &&<Form  form id="formChatQuestion" noValidate validated={validatedQuestionForm} onSubmit={addChatQuestion}>
             <Form.Group>
@@ -598,26 +518,23 @@ const Main = () => {
           </Form>}
 
         </div>
-
         <Modal
                show={showModal3}
                onHide={handleCloseModal3}
                backdrop="static"
                keyboard={false}>
-
           <Modal.Header style={{backgroundColor: 'rgba(0,0,0, 0.8)', color: 'white'}} closeButton>
-            {header.map(n => (
-                <Modal.Title key={''+ n.id}>{n.header}</Modal.Title>
+            {header.map(content => (
+                <Modal.Title key={''+ content.id}>{content.header}</Modal.Title>
             ))}
           </Modal.Header>
-
           <Modal.Body>
             <Table striped>
               <tbody>
-              {content.map(answers => (
+              {content.map(content => (
                   <tr>
                     <td>
-                      <p key={''+ answers.id_chat}> <p style={{display: 'flex', flexWrap: 'wrap'}}><p style={{ textDecoration: 'underline'}}>{answers.username}</p> <p style={{marginTop: 0, right: 20, position: 'absolute'}}>{answers.date}</p> </p> <p style={{fontWeight: 'bold', marginRight: 5}}> {answers.answer}</p> </p>
+                      <p key={''+ content.id_chat}> <p style={{display: 'flex', flexWrap: 'wrap'}}><p style={{ textDecoration: 'underline'}}>{content.username}</p> <p style={{marginTop: 0, right: 20, position: 'absolute'}}>{content.date}</p> </p> <p style={{fontWeight: 'bold', marginRight: 5}}> {content.answer}</p> </p>
                     </td>
                   </tr>
               ))}
