@@ -272,10 +272,10 @@ const Main = () => {
 
           if(response.status === 200){
             setUpdatedChatAnswers(newChatId)
-            setChatMessage('Uuden chatin lisääminen onnistui!')
+            setChatMessage('Uuden vastauksen lisääminen onnistui!')
           }
           else if(response.status === 401)
-            setChatMessage('Uuden chatin lisääminen epäonnistui, täytä puuttuvat kentät!')
+            setChatMessage('Uuden vastauksen lisääminen epäonnistui, täytä puuttuvat kentät!')
 
           resetChatForm()
         })
