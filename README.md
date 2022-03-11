@@ -8,7 +8,8 @@ REST-rajapinnan kuvaus
 -
 Projekti on toteutettu REST-rajapintaa hyödyntäen. Seuraavaksi käydään läpi projektissa käytetyt Http-metodit (tässä projektissa vain GET ja POST):
 
-###GET-metodit:
+GET-metodit:
+-
 
 **Arvostelujen hakemiseen: "/api/results"**
 * Kyselyssä haetaan klikattua id:tä vastaavan asunnon osoite, id, kunto, viihtyvyys, kokonaisarvosana, sekä vapaasana teitokannasta. Apartments taulussa on osoitetiedot sekä pääavaimena id, joka viittaa reviews taulun id:hen joka toimii vierasavaimena.
@@ -25,16 +26,17 @@ Projekti on toteutettu REST-rajapintaa hyödyntäen. Seuraavaksi käydään läp
 **Keskustelujen vastauksien hakemiseen: "/api/chatcontent"**
 * Kyselyssä haetaan chat_answers taulusta kaikki vastaukset jotka on lisätty tiettyyn keskusteluun. Haku tapahtuu id:n perusteella.
 
-###POST-metodit:
+POST-metodit:
+-
 
 **Uuden keskustelun aloitus: "/api/addchat"**
-* SQL kyselyssä chat tauluun lisätään käyttäjätunnus ja käyttäjän kirjoittama otsikko.
+* SQL kyselyssä chat tauluun lisätään käyttäjätunnus, käyttäjän kirjoittama otsikko sekä chatin kirjoituksen päivämäärä.
 
 **Vastauksen lisääminen uuteen keskusteluun: "/api/addchatanswer"**
-* SQL kyselyssä chat_answers tauluun lisätään vastaus, chatin id sekä käyttäjänimi sen perusteella mihin keskusteluun käyttäjä lähettää vastauksen.
+* SQL kyselyssä chat_answers tauluun lisätään vastaus, chatin id, käyttäjänimi sekä päivämäärä muodossa yyyy-mm-dd sen perusteella mihin keskusteluun käyttäjä lähettää vastauksen.
 
 **Arvostelulomakkeen lähetys: "/api/sendform"**
-* SQL kyselyssä reviews tauluun lisätään arvot (kunto, viihtyvyys, kokonaisarvosana, vapaa sana) käyttäjän syöttämän datan perusteella. Kohteen id johon arvostelu lisätään saadaan app.get kyselyllä tietokannasta.
+* SQL kyselyssä reviews tauluun lisätään arvot kunto, viihtyvyys, kokonaisarvosana ja vapaa sana käyttäjän syöttämän datan perusteella. Myös päivämäärä lisätään tietokantamerkintään automaattisesti. Kohteen id johon arvostelu lisätään saadaan app.get kyselyllä tietokannasta.
 
 **Uuden käyttäjän rekisteröinti: "/api/adduser"**
 * Kyselyllä lisätään uuden käyttäjn käyttäjätunnus ja salasana tietokantaan. Käyttäjän salasana salataan bcryptillä ennen tietokantaan lisäämistä.
